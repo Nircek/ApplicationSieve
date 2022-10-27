@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Sieve of Applications</string>
+    <string name="action_settings">Settings</string>
+    <string name="random_picker_label">Randomize</string>
+</resources>
