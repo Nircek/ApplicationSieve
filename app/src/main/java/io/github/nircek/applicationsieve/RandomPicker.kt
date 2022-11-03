@@ -6,7 +6,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.nircek.applicationsieve.databinding.FragmentRandomPickerBinding
 
 
@@ -16,12 +19,17 @@ class RandomPicker : Fragment() {
     private val binding get() = _binding!!
     private var selectedApp: String? = null
 
+    private val packageViewModel: PackageViewModel by activityViewModels {
+        PackageViewModelFactory((requireActivity().application as App).repository)
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentRandomPickerBinding.inflate(inflater, container, false)
+
         return binding.root
 
     }
@@ -32,9 +40,12 @@ class RandomPicker : Fragment() {
         binding.randomizeButton.setOnClickListener {
             val packages = requireActivity().packageManager
                 .getInstalledApplications(PackageManager.GET_META_DATA)
-                .filter{ it.flags and ApplicationInfo.FLAG_SYSTEM == 0 }
+                .filter { it.flags and ApplicationInfo.FLAG_SYSTEM == 0 }
             val packageInfo = packages.random()
-            binding.text.text = "${packages.size} packages. Random: ${packageInfo.packageName} ${packageInfo.sourceDir} ${activity?.packageManager?.getLaunchIntentForPackage(packageInfo.packageName)}"
+            binding.text.text =
+                "${packages.size} packages. Random: ${packageInfo.packageName} ${packageInfo.sourceDir} ${
+                    activity?.packageManager?.getLaunchIntentForPackage(packageInfo.packageName)
+                }"
             binding.image.setImageDrawable(packageInfo.loadIcon(requireActivity().packageManager))
             selectedApp = packageInfo.packageName
         }
@@ -45,6 +56,22 @@ class RandomPicker : Fragment() {
                 ) else null
             if (launchIntent != null) startActivity(launchIntent)
         }
+        binding.add.setOnClickListener {
+            if (selectedApp == null) return@setOnClickListener
+            Toast.makeText(context, "${binding.rating.rating}/7", Toast.LENGTH_SHORT).show()
+            packageViewModel.insert(Package(selectedApp!!, binding.rating.rating))
+
+        }
+
+        val adapter = PackageListAdapter()
+        binding.recyclerView.adapter = adapter
+        binding.recyclerView.layoutManager = LinearLayoutManager(this.context)
+
+        packageViewModel.allWords.observe(viewLifecycleOwner) { words ->
+            // Update the cached copy of the words in the adapter.
+            words?.let { adapter.submitList(it) }
+        }
+
     }
 
     override fun onDestroyView() {
@@ -52,4 +79,4 @@ class RandomPicker : Fragment() {
         _binding = null
     }
 
-    }
+}
