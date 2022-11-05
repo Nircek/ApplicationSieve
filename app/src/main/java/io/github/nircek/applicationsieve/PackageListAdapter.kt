@@ -1,5 +1,7 @@
 package io.github.nircek.applicationsieve
 
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,15 +20,22 @@ class PackageListAdapter :
 
     override fun onBindViewHolder(holder: PackageViewHolder, position: Int) {
         val current = getItem(position)
-        holder.bind(current.id, current.rating)
+        holder.bind(current.id, current.icon, current.rating)
     }
 
     class PackageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val wordItemView: TextView = itemView.findViewById(R.id.textView)
+        private val pkgItemView: TextView = itemView.findViewById(R.id.textView)
 
-        fun bind(text: String, rating: Float) {
-            wordItemView.text =
+        fun bind(text: String, icon: ByteArray, rating: Float) {
+            pkgItemView.text =
                 itemView.resources.getString(R.string.item_string, rating.roundToInt(), text)
+            val bitmap = BitmapFactory.decodeByteArray(icon, 0, icon.size)
+            pkgItemView.setCompoundDrawablesWithIntrinsicBounds(
+                BitmapDrawable(pkgItemView.resources, bitmap),
+                null,
+                null,
+                null
+            )
         }
 
         companion object {

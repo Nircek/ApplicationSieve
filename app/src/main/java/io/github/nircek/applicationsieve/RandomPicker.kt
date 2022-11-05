@@ -2,6 +2,7 @@ package io.github.nircek.applicationsieve
 
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +19,8 @@ class RandomPicker : Fragment() {
     private var _binding: FragmentRandomPickerBinding? = null
     private val binding get() = _binding!!
     private var selectedApp: String? = null
+    private var selectedAppIcon: Drawable? = null
+    private var selectedAppIconStream: ByteArray? = null
 
     private val packageViewModel: PackageViewModel by activityViewModels {
         PackageViewModelFactory((requireActivity().application as App).repository)
@@ -46,8 +49,10 @@ class RandomPicker : Fragment() {
                 "${packages.size} packages. Random: ${packageInfo.packageName} ${packageInfo.sourceDir} ${
                     activity?.packageManager?.getLaunchIntentForPackage(packageInfo.packageName)
                 }"
-            binding.image.setImageDrawable(packageInfo.loadIcon(requireActivity().packageManager))
             selectedApp = packageInfo.packageName
+            selectedAppIcon = packageInfo.loadIcon(requireActivity().packageManager)
+            selectedAppIconStream = PackageRepository.drawableToStream(selectedAppIcon!!)
+            binding.image.setImageDrawable(selectedAppIcon)
         }
         binding.image.setOnClickListener {
             val launchIntent =
@@ -59,7 +64,13 @@ class RandomPicker : Fragment() {
         binding.add.setOnClickListener {
             if (selectedApp == null) return@setOnClickListener
             Toast.makeText(context, "${binding.rating.rating}/7", Toast.LENGTH_SHORT).show()
-            packageViewModel.insert(Package(selectedApp!!, binding.rating.rating))
+            packageViewModel.insert(
+                Package(
+                    selectedApp!!,
+                    selectedAppIconStream!!,
+                    binding.rating.rating
+                )
+            )
 
         }
 
@@ -67,9 +78,9 @@ class RandomPicker : Fragment() {
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(this.context)
 
-        packageViewModel.allWords.observe(viewLifecycleOwner) { words ->
-            // Update the cached copy of the words in the adapter.
-            words?.let { adapter.submitList(it) }
+        packageViewModel.allPkgs.observe(viewLifecycleOwner) { pks ->
+            // Update the cached copy of the pks in the adapter.
+            pks?.let { adapter.submitList(it) }
         }
 
     }
