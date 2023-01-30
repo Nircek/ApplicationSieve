@@ -1,5 +1,6 @@
 <resources>
-    <style name="Base.Theme.SieveOfApplications" parent="Theme.Material3.DayNight.NoActionBar">
-    </style>
+
+    <style name="Base.Theme.SieveOfApplications" parent="Theme.Material3.DayNight.NoActionBar"></style>
+
     <style name="Theme.SieveOfApplications" parent="Base.Theme.SieveOfApplications" />
 </resources>
