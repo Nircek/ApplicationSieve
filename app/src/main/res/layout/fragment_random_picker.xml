@@ -17,7 +17,7 @@
         tools:context=".RandomPicker">
 
         <Button
-            android:id="@+id/randomizeButton"
+            android:id="@+id/randomize_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="@{_->viewmodel.randomize()}" />
@@ -49,14 +49,13 @@
             android:layout_height="wrap_content"
             android:onClick="@{_-> viewmodel.add()}" />
 
-
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
+            android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="fill_vertical"
+            android:scrollbars="vertical"
             tools:listitem="@layout/package_item" />
-
 
     </LinearLayout>
 </layout>

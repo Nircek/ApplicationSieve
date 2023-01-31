@@ -1,8 +1,6 @@
 package io.github.nircek.applicationsieve
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.navigation.findNavController
@@ -29,22 +27,32 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
 
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
+        binding.toolbar.setNavigationOnClickListener {
+            binding.drawerLayout.open()
         }
+
+        binding.navView.setCheckedItem(R.id.nav_home)
+
+        binding.navView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_home -> navController.navigate(R.id.randomPicker)
+                R.id.nav_gallery -> navController.navigate(R.id.randomPicker)
+            }
+            menuItem.isChecked = true
+            binding.drawerLayout.close()
+            true
+        }
+
+        // TODO: don't select items in drawer or disable navigateUp for top destinations
+        val drawerLayout = binding.drawerLayout
+        // Passing each menu ID as a set of Ids because each
+        // menu should be considered as top level destinations.
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow
+            ), drawerLayout
+        )
+
     }
 
     override fun onSupportNavigateUp(): Boolean {
