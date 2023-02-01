@@ -1,6 +1,12 @@
 <resources>
 
-    <style name="Base.Theme.SieveOfApplications" parent="Theme.Material3.DayNight.NoActionBar"></style>
+    <style name="Base.Theme.SieveOfApplications" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+    </style>
 
-    <style name="Theme.SieveOfApplications" parent="Base.Theme.SieveOfApplications" />
+    <style name="Theme.SieveOfApplications" parent="Base.Theme.SieveOfApplications">
+        <item name="android:statusBarColor">@color/status</item>
+        <item name="android:navigationBarColor">@color/navigation</item>
+        <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
+    </style>
 </resources>

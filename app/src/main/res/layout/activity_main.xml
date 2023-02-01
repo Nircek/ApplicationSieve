@@ -5,30 +5,24 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context=".MainActivity"
     tools:openDrawer="start">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:fitsSystemWindows="true">
+        android:orientation="vertical">
 
         <com.google.android.material.appbar.AppBarLayout
             style="@style/Widget.MaterialComponents.AppBarLayout.PrimarySurface"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fitsSystemWindows="true"
-            android:id="@+id/xd"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="wrap_content">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?android:attr/actionBarSize"
-                android:fitsSystemWindows="true"
-                app:navigationIcon="@android:drawable/ic_dialog_dialer"
-                app:title="@string/app_name" />
+                android:layout_height="?android:attr/actionBarSize" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -37,15 +31,12 @@
             android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_weight="1"
             app:defaultNavHost="true"
             app:navGraph="@navigation/nav_graph"
-            tools:ignore="FragmentTagUsage"
-            android:fitsSystemWindows="true"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/xd"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            tools:ignore="FragmentTagUsage" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
