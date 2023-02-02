@@ -2,9 +2,10 @@ package io.github.nircek.applicationsieve
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import io.github.nircek.applicationsieve.databinding.ActivityMainBinding
 
@@ -12,6 +13,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+
+    private fun resetIcon() = binding.toolbar.setNavigationIcon(android.R.drawable.ic_dialog_dialer)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,39 +27,26 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
-        binding.toolbar.setNavigationIcon(android.R.drawable.ic_dialog_dialer)
-
+        //resetIcon()
+        navController.addOnDestinationChangedListener { _: NavController, _: NavDestination, _: Bundle? ->
+            resetIcon()
+        }
         binding.toolbar.setNavigationOnClickListener {
             binding.drawerLayout.open()
         }
 
-        binding.navView.setCheckedItem(R.id.nav_home)
+        binding.navView.setCheckedItem(R.id.nav_package_list)
 
         binding.navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.nav_home -> navController.navigate(R.id.randomPicker)
-                R.id.nav_gallery -> navController.navigate(R.id.randomPicker)
+                R.id.nav_package_list -> navController.navigate(R.id.list)
+                R.id.nav_package_rater -> navController.navigate(R.id.rater)
             }
             menuItem.isChecked = true
             binding.drawerLayout.close()
             true
         }
-
-        // TODO: don't select items in drawer or disable navigateUp for top destinations
-        val drawerLayout = binding.drawerLayout
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow
-            ), drawerLayout
-        )
-
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        return navController.navigateUp(appBarConfiguration)
-                || super.onSupportNavigateUp()
-    }
+
 }

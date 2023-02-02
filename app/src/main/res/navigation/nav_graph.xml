@@ -3,11 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/randomPicker">
+    app:startDestination="@id/list">
 
     <fragment
-        android:id="@+id/randomPicker"
-        android:name="io.github.nircek.applicationsieve.RandomPicker"
-        android:label="@string/random_picker_label"
-        tools:layout="@layout/fragment_random_picker" />
+        android:id="@+id/list"
+        android:name="io.github.nircek.applicationsieve.PackageList"
+        android:label="@string/package_list_label"
+        tools:layout="@layout/fragment_package_list" />
+    <fragment
+        android:id="@+id/rater"
+        android:name="io.github.nircek.applicationsieve.PackageRater"
+        android:label="@string/package_rater_label"
+        tools:layout="@layout/fragment_package_rater" />
 </navigation>

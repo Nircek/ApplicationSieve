@@ -7,12 +7,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import io.github.nircek.applicationsieve.databinding.FragmentRandomPickerBinding
+import io.github.nircek.applicationsieve.databinding.FragmentPackageListBinding
 
 
-class RandomPicker : Fragment() {
+class PackageList : Fragment() {
 
-    private lateinit var binding: FragmentRandomPickerBinding
+    private lateinit var binding: FragmentPackageListBinding
 
     private val packageViewModel: PackageViewModel by activityViewModels {
         val app = requireActivity().application as App
@@ -24,7 +24,7 @@ class RandomPicker : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        FragmentRandomPickerBinding.inflate(inflater, container, false).let {
+        FragmentPackageListBinding.inflate(inflater, container, false).let {
             binding = it
             it.viewmodel = packageViewModel
             it.lifecycleOwner = this
