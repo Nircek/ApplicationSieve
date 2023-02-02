@@ -16,6 +16,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun resetIcon() = binding.toolbar.setNavigationIcon(android.R.drawable.ic_dialog_dialer)
 
+    private val menuRoutes =
+        mapOf(R.id.nav_package_list to R.id.list, R.id.nav_package_rater to R.id.rater)
+    private val routeMenus = menuRoutes.entries.associate { (k, v) -> v to k }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -27,9 +31,10 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
-        //resetIcon()
-        navController.addOnDestinationChangedListener { _: NavController, _: NavDestination, _: Bundle? ->
+        navController.addOnDestinationChangedListener { _: NavController, dst: NavDestination, _: Bundle? ->
             resetIcon()
+            val to = routeMenus[dst.id]
+            if (to != null) binding.navView.setCheckedItem(to)
         }
         binding.toolbar.setNavigationOnClickListener {
             binding.drawerLayout.open()
@@ -38,11 +43,8 @@ class MainActivity : AppCompatActivity() {
         binding.navView.setCheckedItem(R.id.nav_package_list)
 
         binding.navView.setNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.nav_package_list -> navController.navigate(R.id.list)
-                R.id.nav_package_rater -> navController.navigate(R.id.rater)
-            }
-            menuItem.isChecked = true
+            val to = menuRoutes[menuItem.itemId]
+            if (to != null) navController.navigate(to)
             binding.drawerLayout.close()
             true
         }

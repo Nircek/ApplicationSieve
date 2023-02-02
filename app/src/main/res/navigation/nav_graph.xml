@@ -9,10 +9,20 @@
         android:id="@+id/list"
         android:name="io.github.nircek.applicationsieve.PackageList"
         android:label="@string/package_list_label"
-        tools:layout="@layout/fragment_package_list" />
+        tools:layout="@layout/fragment_package_list">
+        <action
+            android:id="@+id/action_list_to_rater"
+            app:destination="@id/rater" />
+    </fragment>
     <fragment
         android:id="@+id/rater"
         android:name="io.github.nircek.applicationsieve.PackageRater"
         android:label="@string/package_rater_label"
-        tools:layout="@layout/fragment_package_rater" />
+        tools:layout="@layout/fragment_package_rater">
+        <argument
+            android:name="packageName"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
 </navigation>

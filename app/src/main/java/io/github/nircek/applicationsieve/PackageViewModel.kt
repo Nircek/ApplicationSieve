@@ -28,8 +28,21 @@ class PackageViewModel(private val repository: PackageRepository, application: A
     /**
      * Launching a new coroutine to insert the data in a non-blocking way
      */
-    fun insert(pkg: Package) = viewModelScope.launch {
+    private fun insert(pkg: Package) = viewModelScope.launch {
         repository.insert(pkg)
+    }
+
+    fun loadApp(packageInfo: ApplicationInfo) {
+        // TODO: make it take Package as argument
+        selectedApp.value = packageInfo.packageName
+        selectedAppIcon.value = packageInfo.loadIcon(pm)
+        selectedAppIconStream.value = PackageRepository.drawableToStream(selectedAppIcon.value!!)
+
+    }
+
+    fun loadApp(packageName: String) {
+        // TODO: firstly look up the db
+        loadApp(pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA))
     }
 
     fun randomize() {
@@ -41,14 +54,12 @@ class PackageViewModel(private val repository: PackageRepository, application: A
             "${packages.size} packages. Random: ${packageInfo.packageName} ${packageInfo.sourceDir} ${
                 pm.getLaunchIntentForPackage(packageInfo.packageName)
             }"
-        selectedApp.value = packageInfo.packageName
-        selectedAppIcon.value = packageInfo.loadIcon(pm)
-        selectedAppIconStream.value = PackageRepository.drawableToStream(selectedAppIcon.value!!)
+        loadApp(packageInfo)
     }
 
     fun startApp() {
         val launchIntent =
-            if (selectedApp.value == null) pm.getLaunchIntentForPackage(
+            if (selectedApp.value != null) pm.getLaunchIntentForPackage(
                 selectedApp.value!!
             ) else null
         if (launchIntent != null) app.startActivity(launchIntent)
