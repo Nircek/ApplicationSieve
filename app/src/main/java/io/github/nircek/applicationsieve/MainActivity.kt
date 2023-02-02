@@ -14,12 +14,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
 
-    private fun resetIcon() = binding.toolbar.setNavigationIcon(android.R.drawable.ic_dialog_dialer)
-
-    private val menuRoutes =
-        mapOf(R.id.nav_package_list to R.id.list, R.id.nav_package_rater to R.id.rater)
-    private val routeMenus = menuRoutes.entries.associate { (k, v) -> v to k }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -29,24 +23,22 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
 
         val navController = findNavController(R.id.nav_host_fragment_content_main)
-        appBarConfiguration = AppBarConfiguration(navController.graph)
+        val setOfTopLevelDestinations = setOf(R.id.nav_list, R.id.nav_rater)
+        appBarConfiguration =AppBarConfiguration(setOfTopLevelDestinations, binding.drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
+
         navController.addOnDestinationChangedListener { _: NavController, dst: NavDestination, _: Bundle? ->
-            resetIcon()
-            val to = routeMenus[dst.id]
-            if (to != null) binding.navView.setCheckedItem(to)
+            binding.navView.setCheckedItem(dst.id)
         }
+
         binding.toolbar.setNavigationOnClickListener {
             binding.drawerLayout.open()
         }
 
-        binding.navView.setCheckedItem(R.id.nav_package_list)
-
         binding.navView.setNavigationItemSelectedListener { menuItem ->
-            val to = menuRoutes[menuItem.itemId]
-            if (to != null) navController.navigate(to)
+            navController.navigate(menuItem.itemId) // FIXME: what if destination is not in menu?
             binding.drawerLayout.close()
-            true
+            false // will be selected by OnDestinationChangedListener
         }
     }
 

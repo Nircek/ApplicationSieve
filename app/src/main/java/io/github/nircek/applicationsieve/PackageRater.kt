@@ -11,7 +11,7 @@ import io.github.nircek.applicationsieve.databinding.FragmentPackageRaterBinding
 
 class PackageRater : Fragment() {
     private lateinit var binding: FragmentPackageRaterBinding
-    val args: PackageRaterArgs by navArgs()
+    private val args: PackageRaterArgs by navArgs()
 
     private val packageViewModel: PackageViewModel by activityViewModels {
         val app = requireActivity().application as App
@@ -26,7 +26,7 @@ class PackageRater : Fragment() {
         FragmentPackageRaterBinding.inflate(inflater, container, false).let {
             binding = it
             it.viewmodel = packageViewModel
-            it.lifecycleOwner = this
+            it.lifecycleOwner = viewLifecycleOwner
             return it.root
         }
     }

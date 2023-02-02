@@ -3,19 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/list">
+    app:startDestination="@id/nav_list">
 
     <fragment
-        android:id="@+id/list"
+        android:id="@+id/nav_list"
         android:name="io.github.nircek.applicationsieve.PackageList"
         android:label="@string/package_list_label"
         tools:layout="@layout/fragment_package_list">
         <action
             android:id="@+id/action_list_to_rater"
-            app:destination="@id/rater" />
+            app:destination="@id/nav_rater" />
     </fragment>
     <fragment
-        android:id="@+id/rater"
+        android:id="@+id/nav_rater"
         android:name="io.github.nircek.applicationsieve.PackageRater"
         android:label="@string/package_rater_label"
         tools:layout="@layout/fragment_package_rater">

@@ -27,7 +27,7 @@ class PackageList : Fragment() {
         FragmentPackageListBinding.inflate(inflater, container, false).let {
             binding = it
             it.viewmodel = packageViewModel
-            it.lifecycleOwner = this
+            it.lifecycleOwner = viewLifecycleOwner
             return it.root
         }
     }
