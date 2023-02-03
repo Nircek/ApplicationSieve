@@ -1,4 +1,4 @@
-package io.github.nircek.applicationsieve
+package io.github.nircek.applicationsieve.ui
 
 import android.app.Application
 import android.content.pm.ApplicationInfo
@@ -6,6 +6,9 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.widget.Toast
 import androidx.lifecycle.*
+import io.github.nircek.applicationsieve.R
+import io.github.nircek.applicationsieve.db.Package
+import io.github.nircek.applicationsieve.db.PackageRepository
 import kotlinx.coroutines.launch
 
 class PackageViewModel(private val repository: PackageRepository, application: Application) :

@@ -1,4 +1,4 @@
-package io.github.nircek.applicationsieve
+package io.github.nircek.applicationsieve.db
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

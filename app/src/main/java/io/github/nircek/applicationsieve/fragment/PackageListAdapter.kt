@@ -1,4 +1,4 @@
-package io.github.nircek.applicationsieve
+package io.github.nircek.applicationsieve.fragment
 
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
@@ -10,6 +10,8 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import io.github.nircek.applicationsieve.R
+import io.github.nircek.applicationsieve.db.Package
 import kotlin.math.roundToInt
 
 class PackageListAdapter :
@@ -31,15 +33,11 @@ class PackageListAdapter :
             pkgItemView.text =
                 itemView.resources.getString(R.string.item_string, rating.roundToInt(), text)
             val bitmap = BitmapFactory.decodeByteArray(icon, 0, icon.size)
-            pkgItemView.setCompoundDrawablesWithIntrinsicBounds(
-                BitmapDrawable(pkgItemView.resources, bitmap),
-                null,
-                null,
-                null
-            )
+            val draw = BitmapDrawable(pkgItemView.resources, bitmap)
+            pkgItemView.setCompoundDrawablesWithIntrinsicBounds(draw, null, null, null)
             pkgItemView.setOnClickListener {
-                pkgItemView.findNavController()
-                    .navigate(PackageListDirections.actionListToRater(text))
+                val action = PackageListDirections.actionListToRater(text)
+                pkgItemView.findNavController().navigate(action)
             }
         }
 
@@ -53,13 +51,9 @@ class PackageListAdapter :
     }
 
     class PackagesComparator : DiffUtil.ItemCallback<Package>() {
-        override fun areItemsTheSame(oldItem: Package, newItem: Package): Boolean {
-            return oldItem === newItem
-        }
-
-        override fun areContentsTheSame(oldItem: Package, newItem: Package): Boolean {
-            return oldItem.id == newItem.id
-        }
+        override fun areItemsTheSame(oldItem: Package, newItem: Package) = oldItem === newItem
+        override fun areContentsTheSame(oldItem: Package, newItem: Package) =
+            oldItem.id == newItem.id
     }
 }
 

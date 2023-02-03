@@ -1,4 +1,4 @@
-package io.github.nircek.applicationsieve
+package io.github.nircek.applicationsieve.db
 
 import android.graphics.Bitmap
 import android.graphics.Canvas

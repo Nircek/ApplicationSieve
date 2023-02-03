@@ -1,4 +1,4 @@
-package io.github.nircek.applicationsieve
+package io.github.nircek.applicationsieve.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,6 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
+import io.github.nircek.applicationsieve.App
+import io.github.nircek.applicationsieve.ui.PackageViewModel
+import io.github.nircek.applicationsieve.ui.PackageViewModelFactory
 import io.github.nircek.applicationsieve.databinding.FragmentPackageRaterBinding
 
 class PackageRater : Fragment() {

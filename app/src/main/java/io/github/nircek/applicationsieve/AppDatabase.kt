@@ -5,6 +5,8 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import io.github.nircek.applicationsieve.db.Package
+import io.github.nircek.applicationsieve.db.PackageDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
