@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         val setOfTopLevelDestinations = setOf(R.id.nav_list, R.id.nav_rater)
-        appBarConfiguration =AppBarConfiguration(setOfTopLevelDestinations, binding.drawerLayout)
+        appBarConfiguration = AppBarConfiguration(setOfTopLevelDestinations, binding.drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
 
         navController.addOnDestinationChangedListener { _: NavController, dst: NavDestination, _: Bundle? ->

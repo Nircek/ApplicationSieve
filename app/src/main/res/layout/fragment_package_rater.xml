@@ -17,26 +17,24 @@
         tools:context=".PackageRater">
 
         <Button
-            android:id="@+id/randomize_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="@{_->viewmodel.randomize()}" />
+            android:onClick="@{_->viewmodel.randomize()}"
+            android:text="@string/pick_btn" />
 
         <TextView
-            android:id="@+id/text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@{viewmodel.description}" />
 
         <ImageView
-            android:id="@+id/image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:onClick="@{_->viewmodel.startApp()}"
+            android:scaleType="fitXY"
             android:src="@{viewmodel.selectedAppIcon}" />
 
         <RatingBar
-            android:id="@+id/rating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:numStars="7"
@@ -44,10 +42,10 @@
             android:stepSize="0.16666666666666666" />
 
         <Button
-            android:id="@+id/add"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="@{_-> viewmodel.add()}" />
+            android:onClick="@{_-> viewmodel.add()}"
+            android:text="@string/add_btn" />
     </LinearLayout>
 
 </layout>

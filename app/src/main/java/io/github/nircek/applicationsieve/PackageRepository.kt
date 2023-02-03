@@ -19,19 +19,25 @@ class PackageRepository(private val packageDao: PackageDao) {
             val expDim = 128
             fun Int.adjust(): Int = (this.toFloat() / maxDim * expDim).roundToInt()
             val w = icon.intrinsicWidth.adjust()
-            val h = icon.intrinsicWidth.adjust()
+            val h = icon.intrinsicHeight.adjust()
+
             val bitmap = if (icon is BitmapDrawable) {
-                icon.bitmap
+                Bitmap.createScaledBitmap(icon.bitmap, w, h, false)
             } else {
                 val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
                 val canvas = Canvas(bmp)
+                val save = icon.copyBounds()
                 icon.setBounds(0, 0, w, h)
                 icon.draw(canvas)
+                icon.bounds = save
                 bmp
             }
             val stream = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.PNG, 70, stream)
-            return stream.toByteArray()
+            bitmap.recycle()
+            val ret = stream.toByteArray()
+            stream.close()
+            return ret
         }
     }
 
@@ -40,7 +46,11 @@ class PackageRepository(private val packageDao: PackageDao) {
     @WorkerThread
     suspend fun insert(pkg: Package) {
         packageDao.insert(pkg)
+    }
 
+    @WorkerThread
+    suspend fun deleteAll() {
+        packageDao.deleteAll()
     }
 }
 

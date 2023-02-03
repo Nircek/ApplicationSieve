@@ -20,24 +20,15 @@ class PackageViewModel(private val repository: PackageRepository, application: A
     var description = MutableLiveData<String>(app.getString(R.string.app_name))
     var selectedApp = MutableLiveData<String?>(null)
     var selectedAppIcon = MutableLiveData<Drawable?>(null)
-    var selectedAppIconStream = MutableLiveData<ByteArray?>(null)
     var selectedAppRating = MutableLiveData(0.0f)
     private val app get() = getApplication<Application>()
     private val pm get() = app.packageManager
 
-    /**
-     * Launching a new coroutine to insert the data in a non-blocking way
-     */
-    private fun insert(pkg: Package) = viewModelScope.launch {
-        repository.insert(pkg)
-    }
+    fun deleteAll() = viewModelScope.launch { repository.deleteAll() }
 
     fun loadApp(packageInfo: ApplicationInfo) {
-        // TODO: make it take Package as argument
         selectedApp.value = packageInfo.packageName
         selectedAppIcon.value = packageInfo.loadIcon(pm)
-        selectedAppIconStream.value = PackageRepository.drawableToStream(selectedAppIcon.value!!)
-
     }
 
     fun loadApp(packageName: String) {
@@ -50,10 +41,7 @@ class PackageViewModel(private val repository: PackageRepository, application: A
             pm.getInstalledApplications(PackageManager.GET_META_DATA)
                 .filter { it.flags and ApplicationInfo.FLAG_SYSTEM == 0 }
         val packageInfo = packages.random()
-        description.value =
-            "${packages.size} packages. Random: ${packageInfo.packageName} ${packageInfo.sourceDir} ${
-                pm.getLaunchIntentForPackage(packageInfo.packageName)
-            }"
+        description.value = "${packages.size} packages. Random: ${packageInfo.packageName}"
         loadApp(packageInfo)
     }
 
@@ -67,16 +55,17 @@ class PackageViewModel(private val repository: PackageRepository, application: A
 
     fun add() {
         if (selectedApp.value == null) return
-        Toast.makeText(app.applicationContext, "${selectedAppRating.value}/7", Toast.LENGTH_SHORT)
-            .show()
-        insert(
-            Package(
-                selectedApp.value!!,
-                selectedAppIconStream.value!!,
-                selectedAppRating.value!! // why LiveData can be null? maybe it should be StateFlow -- see https://stackoverflow.com/a/64521097/6732111
+        viewModelScope.launch {
+            repository.insert(
+                Package(
+                    selectedApp.value!!,
+                    PackageRepository.drawableToStream(selectedAppIcon.value!!),
+                    selectedAppRating.value!! // why LiveData can be null? maybe it should be StateFlow -- see https://stackoverflow.com/a/64521097/6732111
+                )
             )
-        )
-
+            val msg = app.resources.getString(R.string.add_message, selectedAppRating.value)
+            Toast.makeText(app.applicationContext, msg, Toast.LENGTH_SHORT).show()
+        }
     }
 
 }

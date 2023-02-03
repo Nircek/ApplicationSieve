@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/nav_list"
         android:name="io.github.nircek.applicationsieve.PackageList"
-        android:label="@string/package_list_label"
+        android:label="@string/nav_list_label"
         tools:layout="@layout/fragment_package_list">
         <action
             android:id="@+id/action_list_to_rater"
@@ -17,7 +17,7 @@
     <fragment
         android:id="@+id/nav_rater"
         android:name="io.github.nircek.applicationsieve.PackageRater"
-        android:label="@string/package_rater_label"
+        android:label="@string/nav_rater_label"
         tools:layout="@layout/fragment_package_rater">
         <argument
             android:name="packageName"
