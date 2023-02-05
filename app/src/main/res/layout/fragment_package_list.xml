@@ -18,7 +18,7 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="@{_->viewmodel.deleteAll()}"
+            android:onClick="@{_->viewmodel.dropApps()}"
             android:text="@string/reset_btn" />
 
         <androidx.recyclerview.widget.RecyclerView

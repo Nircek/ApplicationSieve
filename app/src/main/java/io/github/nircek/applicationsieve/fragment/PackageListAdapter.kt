@@ -11,32 +11,35 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import io.github.nircek.applicationsieve.R
-import io.github.nircek.applicationsieve.db.Package
+import io.github.nircek.applicationsieve.db.DbRepository.RatedApp
 import kotlin.math.roundToInt
 
 class PackageListAdapter :
-    ListAdapter<Package, PackageListAdapter.PackageViewHolder>(PackagesComparator()) {
+    ListAdapter<RatedApp, PackageListAdapter.PackageViewHolder>(PackagesComparator()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PackageViewHolder {
         return PackageViewHolder.create(parent)
     }
 
     override fun onBindViewHolder(holder: PackageViewHolder, position: Int) {
-        val current = getItem(position)
-        holder.bind(current.id, current.icon, current.rating)
+        holder.bind(getItem(position))
     }
 
     class PackageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val pkgItemView: TextView = itemView.findViewById(R.id.textView)
 
-        fun bind(text: String, icon: ByteArray, rating: Float) {
+        fun bind(pkg: RatedApp) {
             pkgItemView.text =
-                itemView.resources.getString(R.string.item_string, rating.roundToInt(), text)
-            val bitmap = BitmapFactory.decodeByteArray(icon, 0, icon.size)
+                itemView.resources.getString(
+                    R.string.item_string,
+                    pkg.rating.roundToInt(),
+                    pkg.package_name
+                )
+            val bitmap = BitmapFactory.decodeByteArray(pkg.icon, 0, pkg.icon.size)
             val draw = BitmapDrawable(pkgItemView.resources, bitmap)
             pkgItemView.setCompoundDrawablesWithIntrinsicBounds(draw, null, null, null)
             pkgItemView.setOnClickListener {
-                val action = PackageListDirections.actionListToRater(text)
+                val action = PackageListDirections.actionListToRater(pkg.package_name)
                 pkgItemView.findNavController().navigate(action)
             }
         }
@@ -50,10 +53,10 @@ class PackageListAdapter :
         }
     }
 
-    class PackagesComparator : DiffUtil.ItemCallback<Package>() {
-        override fun areItemsTheSame(oldItem: Package, newItem: Package) = oldItem === newItem
-        override fun areContentsTheSame(oldItem: Package, newItem: Package) =
-            oldItem.id == newItem.id
+    class PackagesComparator : DiffUtil.ItemCallback<RatedApp>() {
+        override fun areItemsTheSame(oldItem: RatedApp, newItem: RatedApp) = oldItem === newItem
+        override fun areContentsTheSame(oldItem: RatedApp, newItem: RatedApp) =
+            oldItem.package_name == newItem.package_name
     }
 }
 

@@ -7,4 +7,5 @@
     <string name="pick_btn">Pick one!</string>
     <string name="add_btn">Rate!</string>
     <string name="reset_btn">Drop database!</string>
+    <string name="first_choose_category">You need to choose a category first.</string>
 </resources>

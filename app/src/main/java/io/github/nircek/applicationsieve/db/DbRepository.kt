@@ -6,12 +6,21 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.annotation.WorkerThread
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import java.io.ByteArrayOutputStream
 import kotlin.math.max
 import kotlin.math.roundToInt
 
 
-class PackageRepository(private val packageDao: PackageDao) {
+class DbRepository(private val dao: DbDao) {
+
+    data class RatedApp(
+        val app_id: Int,
+        val package_name: String,
+        val app_name: String,
+        val icon: ByteArray,
+        val rating: Float
+    )
 
     companion object {
         fun drawableToStream(icon: Drawable): ByteArray {
@@ -41,16 +50,32 @@ class PackageRepository(private val packageDao: PackageDao) {
         }
     }
 
-    val allPkgs: Flow<List<Package>> = packageDao.getAll()
+    val allApps: Flow<List<App>> = dao.getAllApps()
 
     @WorkerThread
-    suspend fun insert(pkg: Package) {
-        packageDao.insert(pkg)
+    suspend fun dropApps() = dao.deleteAllApps()
+
+    @WorkerThread
+    suspend fun insertCategory(category: Category) = dao.insertCategory(category)
+
+    @WorkerThread
+    suspend fun dropCategories() = dao.deleteAllCategories()
+
+    @WorkerThread
+    suspend fun rate(app: App, category: Int, rating: Float) {
+        val appId = dao.insertApp(app).toInt()
+        dao.insertRate(Rating(appId, category, rating))
     }
 
-    @WorkerThread
-    suspend fun deleteAll() {
-        packageDao.deleteAll()
+    fun getRatedApps(category: Int = 0): Flow<List<RatedApp>> {
+        return (
+                if (category != 0) dao.getRatesInCategory(category)
+                else dao.getRatesInAllCategories()
+                ).map { m ->
+                m.map { (k, v) ->
+                    RatedApp(v.app_id, v.package_name, v.app_name, v.icon, k.rating)
+                }
+            }
     }
 }
 

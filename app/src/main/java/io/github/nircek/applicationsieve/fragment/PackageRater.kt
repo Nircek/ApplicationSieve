@@ -8,17 +8,19 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import io.github.nircek.applicationsieve.App
+import io.github.nircek.applicationsieve.databinding.FragmentPackageRaterBinding
 import io.github.nircek.applicationsieve.ui.PackageViewModel
 import io.github.nircek.applicationsieve.ui.PackageViewModelFactory
-import io.github.nircek.applicationsieve.databinding.FragmentPackageRaterBinding
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class PackageRater : Fragment() {
     private lateinit var binding: FragmentPackageRaterBinding
     private val args: PackageRaterArgs by navArgs()
 
     private val packageViewModel: PackageViewModel by activityViewModels {
         val app = requireActivity().application as App
-        PackageViewModelFactory(app.repository, app)
+        PackageViewModelFactory(app.dbRepository, app)
     }
 
     override fun onCreateView(

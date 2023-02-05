@@ -5,7 +5,8 @@ import android.os.Build
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.os.StrictMode.VmPolicy
-import io.github.nircek.applicationsieve.db.PackageRepository
+import io.github.nircek.applicationsieve.db.AppDatabase
+import io.github.nircek.applicationsieve.db.DbRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 
@@ -60,5 +61,5 @@ class App : Application() {
     }
 
     val database by lazy { AppDatabase.getDatabase(this, applicationScope) }
-    val repository by lazy { PackageRepository(database.packageDao()) }
+    val dbRepository by lazy { DbRepository(database.packageDao()) }
 }
