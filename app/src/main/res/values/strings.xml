@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">Sieve of Applications</string>
-    <string name="nav_list_label">List</string>
+    <string name="nav_pkg_list_label">List</string>
     <string name="nav_rater_label">Rate</string>
-    <string name="item_string">%d⭐ %s</string>
+    <string name="nav_category_list_label">Categories</string>
+    <string name="item_pkg_string">%d⭐ %s</string>
     <string name="add_message">"%.2f/7"</string>
     <string name="pick_btn">Pick one!</string>
     <string name="add_btn">Rate!</string>

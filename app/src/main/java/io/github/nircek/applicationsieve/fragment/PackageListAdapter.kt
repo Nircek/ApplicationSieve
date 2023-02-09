@@ -26,21 +26,21 @@ class PackageListAdapter :
     }
 
     class PackageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val pkgItemView: TextView = itemView.findViewById(R.id.textView)
+        private val pkgTextView: TextView = itemView.findViewById(R.id.textView)
 
         fun bind(pkg: RatedApp) {
-            pkgItemView.text =
+            pkgTextView.text =
                 itemView.resources.getString(
-                    R.string.item_string,
+                    R.string.item_pkg_string,
                     pkg.rating.roundToInt(),
                     pkg.package_name
                 )
             val bitmap = BitmapFactory.decodeByteArray(pkg.icon, 0, pkg.icon.size)
-            val draw = BitmapDrawable(pkgItemView.resources, bitmap)
-            pkgItemView.setCompoundDrawablesWithIntrinsicBounds(draw, null, null, null)
-            pkgItemView.setOnClickListener {
-                val action = PackageListDirections.actionListToRater(pkg.package_name)
-                pkgItemView.findNavController().navigate(action)
+            val draw = BitmapDrawable(pkgTextView.resources, bitmap)
+            pkgTextView.setCompoundDrawablesWithIntrinsicBounds(draw, null, null, null)
+            itemView.setOnClickListener {
+                val action = PackageListDirections.actionPkgListToRater(pkg.package_name)
+                itemView.findNavController().navigate(action)
             }
         }
 

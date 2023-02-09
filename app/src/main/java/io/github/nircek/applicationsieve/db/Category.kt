@@ -9,4 +9,8 @@ data class Category(
 ) {
     @PrimaryKey(autoGenerate = true)
     var category_id: Int = 0
+
+    constructor(id: Int, name: String) : this(name) {
+        category_id = id
+    }
 }

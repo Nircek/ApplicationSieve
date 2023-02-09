@@ -51,6 +51,7 @@ class DbRepository(private val dao: DbDao) {
     }
 
     val allApps: Flow<List<App>> = dao.getAllApps()
+    val allCategories: Flow<List<Category>> = dao.getAllCategories()
 
     @WorkerThread
     suspend fun dropApps() = dao.deleteAllApps()

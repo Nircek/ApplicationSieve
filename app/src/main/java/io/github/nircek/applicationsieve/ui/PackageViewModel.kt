@@ -27,6 +27,7 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
     val listInSelectedCategory = selectedCategory.asFlow()
         .flatMapLatest { dbRepository.getRatedApps(it) }
         .asLiveData()
+    val listCategories = dbRepository.allCategories.asLiveData()
     private val app get() = getApplication<Application>()
     private val pm get() = app.packageManager
     private val ctx get() = app.applicationContext
