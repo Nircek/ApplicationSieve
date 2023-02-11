@@ -2,6 +2,8 @@ package io.github.nircek.applicationsieve.fragment
 
 import android.os.Bundle
 import android.view.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -12,13 +14,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.nircek.applicationsieve.App
 import io.github.nircek.applicationsieve.R
 import io.github.nircek.applicationsieve.databinding.FragmentPackageListBinding
+import io.github.nircek.applicationsieve.db.Category
 import io.github.nircek.applicationsieve.ui.PackageViewModel
 import io.github.nircek.applicationsieve.ui.PackageViewModelFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 
 @ExperimentalCoroutinesApi
-class PackageList : Fragment(), MenuProvider {
+class PackageList : Fragment(), MenuProvider, AdapterView.OnItemSelectedListener {
 
     private lateinit var binding: FragmentPackageListBinding
 
@@ -58,19 +61,40 @@ class PackageList : Fragment(), MenuProvider {
         }
     }
 
+    lateinit var categoriesAdapter: ArrayAdapter<Category>
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = PackageListAdapter()
+        categoriesAdapter =
+            ArrayAdapter<Category>(requireContext(), android.R.layout.simple_spinner_dropdown_item)
+        categoriesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinner.let {
+            it.adapter = categoriesAdapter
+            it.onItemSelectedListener = this
+        }
+
+        val pkgAdapter = PackageListAdapter()
         binding.recyclerView.let {
-            it.adapter = adapter
+            it.adapter = pkgAdapter
             it.layoutManager = LinearLayoutManager(this.context)
         }
 
+        packageViewModel.listCategories.observe(viewLifecycleOwner) { categories ->
+            categoriesAdapter.add(Category.all(resources))
+            categoriesAdapter.addAll(categories)
+        }
         packageViewModel.listInSelectedCategory.observe(viewLifecycleOwner) { pks ->
-            // Update the cached copy of the pks in the adapter.
-            pks?.let { adapter.submitList(it) }
+            pks?.let { pkgAdapter.submitList(it) }
         }
 
+    }
+
+    override fun onItemSelected(a: AdapterView<*>?, v: View?, pos: Int, id: Long) {
+        packageViewModel.selectedCategory.value = categoriesAdapter.getItem(pos)!!.category_id
+    }
+
+    override fun onNothingSelected(a: AdapterView<*>?) {
+        a?.setSelection(0)
     }
 }

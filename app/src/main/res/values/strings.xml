@@ -14,4 +14,5 @@
     <string name="no_apps">There are no apps…</string>
     <string name="add_category">Add a new category</string>
     <string name="delete_category">Delete a category</string>
+    <string name="all_categories"><![CDATA[<all categories>]]></string>
 </resources>

@@ -93,7 +93,7 @@ class CategoryList : Fragment(), MenuProvider {
 
         packageViewModel.listCategories.observe(viewLifecycleOwner) { list ->
             // Update the cached copy of the list in the adapter.
-            list?.let { adapter.submitList(listOf(Category(0, "no category")) + it) }
+            list?.let { adapter.submitList(listOf(Category.all(resources)) + it) }
         }
 
     }
