@@ -74,16 +74,12 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
             if (selectedApp.value == null) return@launch
             var category = selectedCategory.value!!
             if (category == 0) {
-                category = dbRepository.insertCategory(Category("xd")).toInt()
-                Toast.makeText(ctx, "Created category with id $category.", Toast.LENGTH_SHORT)
-                    .show()
-                selectedCategory.value = category
-//                Toast.makeText(
-//                    ctx,
-//                    app.resources.getString(R.string.first_choose_category),
-//                    Toast.LENGTH_SHORT
-//                ).show()
-//                return@launch
+                Toast.makeText(
+                    ctx,
+                    app.resources.getString(R.string.first_choose_category),
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@launch
             }
             viewModelScope.launch {
                 dbRepository.rate(
@@ -94,9 +90,21 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
                     ), category,
                     selectedAppRating.value!! // why LiveData can be null? maybe it should be StateFlow -- see https://stackoverflow.com/a/64521097/6732111
                 )
-                val msg = app.resources.getString(R.string.add_message, selectedAppRating.value)
+                val msg = app.resources.getString(R.string.rate_app_msg, selectedAppRating.value)
                 Toast.makeText(ctx, msg, Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    fun addCategory(name: String) {
+        viewModelScope.launch {
+            selectedCategory.value = dbRepository.insertCategory(Category(name)).toInt()
+        }
+    }
+
+    fun deleteCategory(c: Category) {
+        viewModelScope.launch {
+            dbRepository.deleteCategory(c)
         }
     }
 

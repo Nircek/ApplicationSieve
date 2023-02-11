@@ -1,21 +1,26 @@
 package io.github.nircek.applicationsieve.fragment
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.nircek.applicationsieve.App
+import io.github.nircek.applicationsieve.R
 import io.github.nircek.applicationsieve.databinding.FragmentCategoryListBinding
+import io.github.nircek.applicationsieve.db.Category
 import io.github.nircek.applicationsieve.ui.PackageViewModel
 import io.github.nircek.applicationsieve.ui.PackageViewModelFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 
 @ExperimentalCoroutinesApi
-class CategoryList : Fragment() {
+class CategoryList : Fragment(), MenuProvider {
 
     private lateinit var binding: FragmentCategoryListBinding
 
@@ -24,11 +29,46 @@ class CategoryList : Fragment() {
         PackageViewModelFactory(app.dbRepository, app)
     }
 
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.category_list_options, menu)
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        when (menuItem.itemId) {
+            R.id.add_category -> AlertDialog.Builder(requireActivity()).apply {
+                setTitle(R.string.add_category)
+                val et = EditText(this@CategoryList.context)
+                setView(et)
+                setPositiveButton(R.string.add_category) { _, _ -> packageViewModel.addCategory(et.text.toString()) }
+            }.show()
+            R.id.delete_category -> AlertDialog.Builder(requireActivity()).apply {
+                setTitle(R.string.delete_category)
+                val categories = packageViewModel.listCategories.value ?: listOf()
+                val categoriesArray = categories.map { it.name }.toTypedArray()
+                setItems(categoriesArray) { d, i ->
+                    packageViewModel.deleteCategory(categories[i])
+                    d.dismiss()
+                }
+            }.show()
+            R.id.drop_db -> AlertDialog.Builder(requireActivity()).apply {
+                setTitle(R.string.drop_categories_confirm)
+                setPositiveButton(R.string.drop_apps_btn) { _, _ -> packageViewModel.dropCategories() }
+            }.show()
+            else -> return false
+        }
+        return true
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        (requireActivity() as MenuHost).addMenuProvider(
+            this,
+            viewLifecycleOwner,
+            Lifecycle.State.RESUMED
+        )
         FragmentCategoryListBinding.inflate(inflater, container, false).let {
             binding = it
             it.viewmodel = packageViewModel
@@ -40,6 +80,11 @@ class CategoryList : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        (requireActivity() as MenuHost).addMenuProvider(
+            this,
+            viewLifecycleOwner,
+            Lifecycle.State.RESUMED
+        )
         val adapter = CategoryListAdapter()
         binding.recyclerView.let {
             it.adapter = adapter
@@ -48,7 +93,7 @@ class CategoryList : Fragment() {
 
         packageViewModel.listCategories.observe(viewLifecycleOwner) { list ->
             // Update the cached copy of the list in the adapter.
-            list?.let { adapter.submitList(it) }
+            list?.let { adapter.submitList(listOf(Category(0, "no category")) + it) }
         }
 
     }

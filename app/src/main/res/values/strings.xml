@@ -4,9 +4,14 @@
     <string name="nav_rater_label">Rate</string>
     <string name="nav_category_list_label">Categories</string>
     <string name="item_pkg_string">%d⭐ %s</string>
-    <string name="add_message">"%.2f/7"</string>
+    <string name="rate_app_msg">"%.2f/7"</string>
     <string name="pick_btn">Pick one!</string>
-    <string name="add_btn">Rate!</string>
-    <string name="reset_btn">Drop database!</string>
+    <string name="rate_btn">Rate!</string>
+    <string name="drop_apps_btn">Drop database!</string>
+    <string name="drop_apps_confirm">Do you really want to delete all apps?</string>
+    <string name="drop_categories_confirm">Do you really want to delete all apps?</string>
     <string name="first_choose_category">You need to choose a category first.</string>
+    <string name="no_apps">There are no apps…</string>
+    <string name="add_category">Add a new category</string>
+    <string name="delete_category">Delete a category</string>
 </resources>

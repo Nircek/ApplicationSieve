@@ -78,5 +78,10 @@ class DbRepository(private val dao: DbDao) {
                 }
             }
     }
+
+    @WorkerThread
+    suspend fun deleteCategory(c: Category) {
+        dao.deleteCategory(c)
+    }
 }
 

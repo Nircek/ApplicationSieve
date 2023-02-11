@@ -23,7 +23,10 @@ interface DbDao {
     @Insert
     suspend fun insertCategory(c: Category): Long
 
-    @Query("DELETE FROM app_table")
+    @Delete
+    suspend fun deleteCategory(c: Category)
+
+    @Query("DELETE FROM category_table")
     suspend fun deleteAllCategories()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

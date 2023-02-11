@@ -19,7 +19,7 @@ class CategoryListAdapter :
     }
 
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
-        holder.bind(if (position == 0) Category(0, "no category") else getItem(position - 1))
+        holder.bind(getItem(position))
     }
 
     class CategoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
