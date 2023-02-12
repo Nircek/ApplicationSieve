@@ -1,8 +1,6 @@
 package io.github.nircek.applicationsieve.ui
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import android.util.AttributeSet
 import android.view.View
 import android.widget.AdapterView
@@ -29,6 +27,7 @@ class CategorySpinner(ctx: Context, attrs: AttributeSet?) :
     private val list = ArrayList<Category>()
     private val _adapter get() = adapter.asCategoryAdapter()
     override fun setAdapter(adapter: SpinnerAdapter) = super.setAdapter(adapter.asCategoryAdapter())
+    private var dirtySelection = false
 
 
     init {
@@ -45,38 +44,46 @@ class CategorySpinner(ctx: Context, attrs: AttributeSet?) :
     override fun onItemSelected(a: AdapterView<*>?, v: View?, pos: Int, id: Long) {
         val chosen = _adapter.getItem(pos)!!.category_id
         if (chosen >= 0) {
-            vm.selectedCategory.value = chosen
+            if (vm.selectedCategory.value != chosen) vm.selectedCategory.value = chosen
             return
         }
         Category.dialogNew(context, vm)
+        invalidateSelection()
     }
 
     override fun onNothingSelected(a: AdapterView<*>?) {
         a?.setSelection(0)
+        vm.selectedCategory.value = 0
+        dirtySelection = false
+    }
+
+    private fun invalidateSelection(c: Int? = null) {
+        val sel = list.withIndex()
+            .filter { e -> e.value.category_id == (c ?: vm.selectedCategory.value) }
+            .getOrNull(0)?.index
+        if (sel == null) dirtySelection = true
+        else setSelection(sel)
+    }
+
+    private fun sureSelection() {
+        if (!dirtySelection) return
+        dirtySelection = false
+        invalidateSelection()
     }
 
     fun setViewModel(obj: PackageViewModel?) {
         if (obj == null) return
         vm = obj
         findViewTreeLifecycleOwner()?.let {
-            vm.selectedCategory.observe(it) { category ->
-                Handler(Looper.getMainLooper()).postDelayed({
-                    // delay to make sure that listCategories got updated after Category.dialogNew
-                    val index = vm.listCategories.value
-                        ?.withIndex()
-                        ?.filter { e -> e.value.category_id == category }
-                        ?.getOrNull(0)
-                        ?.index ?: -1
-                    setSelection(index + 1)
-                }, 0)
-            }
             vm.listCategories.observe(it) { categories ->
                 list.clear()
                 list.add(Category.all(resources))
                 list.addAll(categories)
                 if (supplyNew) list.add(Category.new(resources))
                 _adapter.notifyDataSetChanged()
+                sureSelection() // if invalidation of just added category already happened
             }
+            vm.selectedCategory.observe(it) { c -> invalidateSelection(c) }
         }
     }
 }
