@@ -2,7 +2,6 @@ package io.github.nircek.applicationsieve.fragment
 
 import android.os.Bundle
 import android.view.*
-import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -35,12 +34,7 @@ class CategoryList : Fragment(), MenuProvider {
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
-            R.id.add_category -> AlertDialog.Builder(requireActivity()).apply {
-                setTitle(R.string.add_category)
-                val et = EditText(this@CategoryList.context)
-                setView(et)
-                setPositiveButton(R.string.add_category) { _, _ -> packageViewModel.addCategory(et.text.toString()) }
-            }.show()
+            R.id.add_category -> Category.dialogNew(requireContext(), packageViewModel)
             R.id.delete_category -> AlertDialog.Builder(requireActivity()).apply {
                 setTitle(R.string.delete_category)
                 val categories = packageViewModel.listCategories.value ?: listOf()

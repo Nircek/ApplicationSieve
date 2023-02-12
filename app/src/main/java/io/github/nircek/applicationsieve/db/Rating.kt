@@ -2,9 +2,11 @@ package io.github.nircek.applicationsieve.db
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 
 @Entity(
     tableName = "rating_table", primaryKeys = ["app_id", "category_id"],
+    indices = [Index(value = ["category_id"])], // SRC: https://stackoverflow.com/a/58597401/6732111
     foreignKeys = [
         ForeignKey(
             entity = App::class,
