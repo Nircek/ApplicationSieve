@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="viewmodel"
             type="io.github.nircek.applicationsieve.ui.PackageViewModel" />
@@ -35,12 +37,50 @@
             android:layout_height="wrap_content"
             android:text="@{viewmodel.description}" />
 
-        <ImageView
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:onClick="@{_->viewmodel.startApp()}"
-            android:scaleType="fitXY"
-            android:src="@{viewmodel.selectedAppIcon}" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp">
+
+            <ImageButton
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginEnd="8dp"
+                android:alpha="@{viewmodel.fdroid &lt;= 0 ? 0.3f : 1.0f}"
+                android:background="@drawable/round_background"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_fdroid"
+                android:visibility="@{viewmodel.fdroid >= 0 ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/logo"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/logo"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:onClick="@{_->viewmodel.startApp()}"
+                android:scaleType="fitXY"
+                android:src="@{viewmodel.selectedAppIcon}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginStart="8dp"
+                android:alpha="@{viewmodel.google &lt;= 0 ? 0.3f : 1.0f}"
+                android:background="@drawable/round_background"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_google"
+                android:visibility="@{viewmodel.google >= 0 ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/logo"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <RatingBar
             android:layout_width="wrap_content"

@@ -12,11 +12,14 @@ import io.github.nircek.applicationsieve.R
 import io.github.nircek.applicationsieve.db.App
 import io.github.nircek.applicationsieve.db.Category
 import io.github.nircek.applicationsieve.db.DbRepository
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.flow
+import java.io.IOException
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.net.ssl.HttpsURLConnection
 
 
 @ExperimentalCoroutinesApi
@@ -32,6 +35,18 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
     val listInSelectedCategory = selectedCategory.asFlow()
         .flatMapLatest { dbRepository.getRatedApps(it) }
         .asLiveData()
+
+    private fun query(url: String) = selectedApp.asFlow().flatMapLatest {
+        flow {
+            emit(0)
+            val status = withContext(Dispatchers.IO) { return@withContext getStatus("$url$it") }
+            emit(if (status == 200) 1 else -1)
+        }
+    }.asLiveData()
+
+    val google = query("https://play.google.com/store/apps/details?id=")
+    val fdroid = query("https://f-droid.org/en/packages/")
+
     val listCategories = dbRepository.allCategories.asLiveData()
     private val app get() = getApplication<Application>()
     private val pm get() = app.packageManager
@@ -178,6 +193,18 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
                 selectedApp.value!!
             ) else null
         if (launchIntent != null) app.startActivity(launchIntent)
+    }
+
+    private fun getStatus(url: String): Int {
+        return try {
+            val conn = URL(url).openConnection() as HttpsURLConnection
+            conn.requestMethod = "GET"
+            conn.connect()
+            conn.responseCode
+        } catch (e: IOException) {
+            // e.printStackTrace()
+            -1
+        }
     }
 
     fun add() {

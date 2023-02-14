@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId "io.github.nircek.applicationsieve"
-        minSdk 14
+        minSdk 21
         targetSdk 33
         versionCode 4
         versionName "1.1.0"
