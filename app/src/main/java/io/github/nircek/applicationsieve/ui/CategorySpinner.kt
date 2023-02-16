@@ -44,7 +44,7 @@ class CategorySpinner(ctx: Context, attrs: AttributeSet?) :
     override fun onItemSelected(a: AdapterView<*>?, v: View?, pos: Int, id: Long) {
         val chosen = _adapter.getItem(pos)!!.category_id
         if (chosen >= 0) {
-            if (vm.selectedCategory.value != chosen) vm.selectedCategory.value = chosen
+            if (vm.selCategory.value != chosen) vm.selCategory.value = chosen
             return
         }
         Category.dialogNew(context, vm)
@@ -53,13 +53,13 @@ class CategorySpinner(ctx: Context, attrs: AttributeSet?) :
 
     override fun onNothingSelected(a: AdapterView<*>?) {
         a?.setSelection(0)
-        vm.selectedCategory.value = 0
+        vm.selCategory.value = 0
         dirtySelection = false
     }
 
     private fun invalidateSelection(c: Int? = null) {
         val sel = list.withIndex()
-            .filter { e -> e.value.category_id == (c ?: vm.selectedCategory.value) }
+            .filter { e -> e.value.category_id == (c ?: vm.selCategory.value) }
             .getOrNull(0)?.index
         if (sel == null) dirtySelection = true
         else setSelection(sel)
@@ -75,7 +75,7 @@ class CategorySpinner(ctx: Context, attrs: AttributeSet?) :
         if (obj == null) return
         vm = obj
         findViewTreeLifecycleOwner()?.let {
-            vm.listCategories.observe(it) { categories ->
+            vm.allCategories.live.observe(it) { categories ->
                 list.clear()
                 list.add(Category.all(resources))
                 list.addAll(categories)
@@ -83,7 +83,7 @@ class CategorySpinner(ctx: Context, attrs: AttributeSet?) :
                 _adapter.notifyDataSetChanged()
                 sureSelection() // if invalidation of just added category already happened
             }
-            vm.selectedCategory.observe(it) { c -> invalidateSelection(c) }
+            vm.selCategory.live.observe(it) { c -> invalidateSelection(c) }
         }
     }
 }

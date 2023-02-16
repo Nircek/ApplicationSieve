@@ -67,7 +67,7 @@ class PackageList : Fragment(), MenuProvider {
             it.layoutManager = LinearLayoutManager(context)
         }
 
-        packageViewModel.listInSelectedCategory.observe(viewLifecycleOwner) { pks ->
+        packageViewModel.appsInCategory.live.observe(viewLifecycleOwner) { pks ->
             pks?.let { pkgAdapter.submitList(it) }
         }
 

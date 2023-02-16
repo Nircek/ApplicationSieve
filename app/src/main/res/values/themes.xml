@@ -7,6 +7,5 @@
     <style name="Theme.SieveOfApplications" parent="Base.Theme.SieveOfApplications">
         <item name="android:statusBarColor">@color/status</item>
         <item name="android:navigationBarColor">@color/navigation</item>
-        <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
     </style>
 </resources>

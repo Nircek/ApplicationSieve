@@ -37,7 +37,7 @@ class CategoryList : Fragment(), MenuProvider {
             R.id.add_category -> Category.dialogNew(requireContext(), packageViewModel)
             R.id.delete_category -> AlertDialog.Builder(requireActivity()).apply {
                 setTitle(R.string.delete_category)
-                val categories = packageViewModel.listCategories.value ?: listOf()
+                val categories = packageViewModel.allCategories.value
                 val categoriesArray = categories.map { it.name }.toTypedArray()
                 setItems(categoriesArray) { d, i ->
                     packageViewModel.deleteCategory(categories[i])
@@ -85,7 +85,7 @@ class CategoryList : Fragment(), MenuProvider {
             it.layoutManager = LinearLayoutManager(this.context)
         }
 
-        packageViewModel.listCategories.observe(viewLifecycleOwner) { list ->
+        packageViewModel.allCategories.live.observe(viewLifecycleOwner) { list ->
             // Update the cached copy of the list in the adapter.
             list?.let { adapter.submitList(listOf(Category.all(resources)) + it) }
         }

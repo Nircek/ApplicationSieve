@@ -28,7 +28,7 @@ class PackageRater : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         if (args.packageName != null) packageViewModel.loadApp(args.packageName!!)
-        if (args.categoryId != -1) packageViewModel.selectedCategory.value = args.categoryId
+        if (args.categoryId != -1) packageViewModel.selCategory.value = args.categoryId
         FragmentPackageRaterBinding.inflate(inflater, container, false).let {
             binding = it
             it.viewmodel = packageViewModel

@@ -29,7 +29,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/no_apps"
-            android:visibility="@{viewmodel.listInSelectedCategory.empty ? View.VISIBLE : View.GONE}" />
+            android:visibility="@{viewmodel.appsInCategory.live.empty ? View.VISIBLE : View.GONE}" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"
