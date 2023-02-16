@@ -10,9 +10,7 @@ import io.github.nircek.applicationsieve.R
 import io.github.nircek.applicationsieve.db.App
 import io.github.nircek.applicationsieve.db.Category
 import io.github.nircek.applicationsieve.db.DbRepository
-import io.github.nircek.applicationsieve.util.LiveFlow
-import io.github.nircek.applicationsieve.util.LiveStateFlow
-import io.github.nircek.applicationsieve.util.MutableLiveStateFlow
+import io.github.nircek.applicationsieve.util.toLiveFlow
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.io.IOException
@@ -31,11 +29,8 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
     private fun <T> Flow<T>.toStateFlow(init: T) =
         stateIn(viewModelScope, SharingStarted.Eagerly, init)
 
-    private fun <T> Flow<T>.toLiveFlow() = LiveFlow(this)
     private fun <T> Flow<T>.toLiveStateFlow() = toStateFlow().toLiveFlow()
     private fun <T> Flow<T>.toLiveStateFlow(init: T) = toStateFlow(init).toLiveFlow()
-    private fun <T> StateFlow<T>.toLiveFlow() = LiveStateFlow(this)
-    private fun <T> MutableStateFlow<T>.toLiveFlow() = MutableLiveStateFlow(this)
     //#endregion
 
     //#region state holders
@@ -46,10 +41,10 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
 
     //#region flows
     // FIXME: firstly look up the db
-    val appInfo = pkgName.map { it?.let { pm.getApplicationInfo(it, 0) } }
-    val description = appInfo.map { it?.let { getAppInfo(it) } }.toLiveFlow()
-    val appName = appInfo.map { it?.let { getApplicationName(it) } }.toStateFlow()
-    val appIcon = appInfo.map { it?.loadIcon(pm) }.toStateFlow()
+    val appInfo = pkgName.mapLatest { it?.let { pm.getApplicationInfo(it, 0) } }
+    val description = appInfo.mapLatest { it?.let { getAppInfo(it) } }.toLiveFlow()
+    val appName = appInfo.mapLatest { it?.let { getApplicationName(it) } }.toStateFlow()
+    val appIcon = appInfo.mapLatest { it?.loadIcon(pm) }.toStateFlow()
     val appsInCategory = selCategory.flatMapLatest { dbRepository.getRatedApps(it) }.toLiveFlow()
     val allCategories = dbRepository.allCategories.toLiveStateFlow(listOf())
 
@@ -70,6 +65,7 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
     private val pm get() = app.packageManager
     private val ctx get() = app.applicationContext
 
+    // TODO: make it a cached flow?
     private fun getRandomInstalledPkg() = pm.getInstalledApplications(0)
         .filter { it.flags and ApplicationInfo.FLAG_SYSTEM == 0 }
         .random().packageName
