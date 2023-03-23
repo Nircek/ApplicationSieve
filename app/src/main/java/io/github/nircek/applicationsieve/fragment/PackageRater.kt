@@ -31,7 +31,7 @@ class PackageRater : Fragment() {
         if (args.categoryId != -1) packageViewModel.selCategory.value = args.categoryId
         FragmentPackageRaterBinding.inflate(inflater, container, false).let {
             binding = it
-            it.viewmodel = packageViewModel
+            it.vm = packageViewModel
             it.lifecycleOwner = viewLifecycleOwner
             return it.root
         }

@@ -14,6 +14,11 @@ data class App(
     val app_name: String,
     @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
     var icon: ByteArray,
+    val source: String,
+    val install_time: Long,
+    val update_time: Long,
+    val min_sdk: Int,
+    val sdk: Int,
 ) {
     @PrimaryKey(autoGenerate = true)
     var app_id: Int = 0

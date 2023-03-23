@@ -16,4 +16,5 @@
     <string name="delete_category">Delete a category</string>
     <string name="all_categories"><![CDATA[<all categories>]]></string>
     <string name="new_category">Add new…</string>
+    <string name="app_description">%s\n%s %s\n%s\ntar %s\nmin %s\ncom %s\n%s %s %s</string>
 </resources>

@@ -8,7 +8,7 @@
         <import type="android.view.View" />
 
         <variable
-            name="viewmodel"
+            name="vm"
             type="io.github.nircek.applicationsieve.ui.PackageViewModel" />
     </data>
 
@@ -24,18 +24,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:supply_new="true"
-            app:viewModel="@{viewmodel}" />
+            app:viewModel="@{vm}" />
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="@{_->viewmodel.randomize()}"
+            android:onClick="@{_->vm.randomize()}"
             android:text="@string/pick_btn" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{viewmodel.description.live}" />
+            android:text="@{@string/app_description(vm.appName, vm.pkgName, vm.appVersion.live, vm.appFlags.live, vm.appFriendlyTarSdk.live, vm.appFriendlyMinSdk.live, vm.appFriendlyComSdk.live, vm.appSource, vm.appFriendlyInstallTime.live, vm.appFriendlyUpdateTime.live)}" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -45,12 +45,12 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_marginEnd="8dp"
-                android:alpha="@{viewmodel.fdroid.live &lt;= 0 ? 0.3f : 1.0f}"
+                android:alpha="@{vm.appFdroidRepo.live &lt;= 0 ? 0.3f : 1.0f}"
                 android:background="@drawable/round_background"
                 android:padding="10dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_fdroid"
-                android:visibility="@{viewmodel.fdroid.live >= 0 ? View.VISIBLE : View.GONE}"
+                android:visibility="@{vm.appFdroidRepo.live >= 0 ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/logo"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -59,9 +59,9 @@
                 android:id="@+id/logo"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
-                android:onClick="@{_->viewmodel.startApp()}"
+                android:onClick="@{_->vm.startApp()}"
                 android:scaleType="fitXY"
-                android:src="@{viewmodel.appIcon}"
+                android:src="@{vm.appIcon}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -71,12 +71,12 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_marginStart="8dp"
-                android:alpha="@{viewmodel.google.live &lt;= 0 ? 0.3f : 1.0f}"
+                android:alpha="@{vm.appGoogleRepo.live &lt;= 0 ? 0.3f : 1.0f}"
                 android:background="@drawable/round_background"
                 android:padding="10dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_google"
-                android:visibility="@{viewmodel.google.live >= 0 ? View.VISIBLE : View.GONE}"
+                android:visibility="@{vm.appGoogleRepo.live >= 0 ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/logo"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -86,13 +86,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:numStars="7"
-            android:rating="@={viewmodel.appRate}"
+            android:rating="@={vm.appRate}"
             android:stepSize="0.16666666666666666" />
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="@{_-> viewmodel.add()}"
+            android:onClick="@{_-> vm.add()}"
             android:text="@string/rate_btn" />
     </LinearLayout>
 

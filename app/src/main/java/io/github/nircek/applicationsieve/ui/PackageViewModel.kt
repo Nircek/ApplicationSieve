@@ -18,6 +18,7 @@ import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.net.ssl.HttpsURLConnection
+import kotlin.math.max
 
 
 @ExperimentalCoroutinesApi
@@ -33,6 +34,14 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
     private fun <T> Flow<T>.toLiveStateFlow(init: T) = toStateFlow(init).toLiveFlow()
     //#endregion
 
+    //#region
+    fun <T> throwTo(hopper: MutableSharedFlow<T>, what: T) =
+        viewModelScope.launch { hopper.emit(what) }
+
+    fun <T> MutableSharedFlow<T>.throwIn(what: T) = throwTo(this, what)
+    val hopCategory = MutableSharedFlow<String>()
+    //#endregion
+
     //#region state holders
     val pkgName = MutableStateFlow<String?>(null)
     val appRate = MutableStateFlow(0.0f)
@@ -42,11 +51,35 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
     //#region flows
     // FIXME: firstly look up the db
     val appInfo = pkgName.mapLatest { it?.let { pm.getApplicationInfo(it, 0) } }
-    val description = appInfo.mapLatest { it?.let { getAppInfo(it) } }.toLiveFlow()
+    val pkgInfo = pkgName.mapLatest { it?.let { pm.getPackageInfo(it, 0) } }
     val appName = appInfo.mapLatest { it?.let { getApplicationName(it) } }.toStateFlow()
     val appIcon = appInfo.mapLatest { it?.loadIcon(pm) }.toStateFlow()
+    val appVersion = pkgInfo.mapLatest { it?.versionName }.toLiveFlow()
+    val appFlags = appInfo.mapLatest { it?.let { parseFlags(it.flags) } }.toLiveFlow()
+    val appTarSdk = appInfo.mapLatest { it?.let { it.targetSdkVersion } }.toStateFlow()
+    val appMinSdk =
+        appInfo.mapLatest { it?.let { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) it.minSdkVersion else null } }
+            .toStateFlow()
+    val appComSdk =
+        appInfo.mapLatest { it?.let { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) it.compileSdkVersion else null } }
+            .toStateFlow()
+
+    // TODO: add preferred sdk version format (M/23/6.0/6.0(23))
+    val appFriendlyTarSdk = appTarSdk.mapLatest { getFullAndroidVersion(it) }.toLiveFlow()
+    val appFriendlyMinSdk = appMinSdk.mapLatest { getFullAndroidVersion(it) }.toLiveFlow()
+    val appFriendlyComSdk = appComSdk.mapLatest { getFullAndroidVersion(it) }.toLiveFlow()
+    val appInstallTime = pkgInfo.mapLatest { it?.firstInstallTime }.toStateFlow()
+    val appUpdateTime = pkgInfo.mapLatest { it?.lastUpdateTime }.toStateFlow()
+    val appFriendlyInstallTime =
+        appInstallTime.mapLatest { it?.let { getFriendlyDate(it) } }.toLiveFlow()
+    val appFriendlyUpdateTime =
+        appUpdateTime.mapLatest { it?.let { getFriendlyDate(it) } }.toLiveFlow()
+    val appSource = appInfo.mapLatest { it?.let { getFriendlySource(it) } }.toLiveStateFlow()
+    val appGoogleRepo = query("https://play.google.com/store/apps/details?id=").toLiveFlow()
+    val appFdroidRepo = query("https://f-droid.org/en/packages/").toLiveFlow()
     val appsInCategory = selCategory.flatMapLatest { dbRepository.getRatedApps(it) }.toLiveFlow()
     val allCategories = dbRepository.allCategories.toLiveStateFlow(listOf())
+
 
     private fun query(url: String) = pkgName.flatMapLatest {
         flow {
@@ -56,8 +89,6 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
         }
     }
 
-    val google = query("https://play.google.com/store/apps/details?id=").toLiveFlow()
-    val fdroid = query("https://f-droid.org/en/packages/").toLiveFlow()
     //#endregion flows
 
     //#region android
@@ -78,7 +109,7 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
             val rev = it.name.startsWith("FLAG_SUPPORTS_")
             val contain = flags and it.getInt(ApplicationInfo()) != 0
             if (contain == rev) return@mapNotNull null
-            return@mapNotNull "${if (rev) "~" else ""}${it.name}"
+            return@mapNotNull "${if (rev) "~" else ""}${it.name}".replace("FLAG_", "")
         }.joinToString("|")
 
     private val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
@@ -136,28 +167,6 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
             -1
         }
     }
-
-    private fun getAppInfo(info: ApplicationInfo): String {
-        val pkg = info.packageName
-        val pkgInfo = pm.getPackageInfo(pkg, 0)
-        val ret = mutableListOf<String>()
-        ret += "$pkg v${pkgInfo.versionName}"
-        ret += getApplicationName(info)
-        ret += "flags: ${parseFlags(info.flags)}"
-
-        ret += "${getFriendlySource(info)} ${getFriendlyDate(pkgInfo.firstInstallTime)} " +
-                "(${getFriendlyDate(pkgInfo.lastUpdateTime)})"
-
-        val tar = info.targetSdkVersion
-        val min = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) info.minSdkVersion else null
-        val com =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) info.compileSdkVersion else null
-        ret += "tar ${getFullAndroidVersion(tar)}"
-        ret += "min ${getFullAndroidVersion(min)}"
-        ret += "com ${getFullAndroidVersion(com)}"
-
-        return ret.joinToString("\n")
-    }
     //#endregion
 
     //#region actions
@@ -182,7 +191,16 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
             }
             viewModelScope.launch {
                 pkgName.value?.let {
-                    val a = App(it, appName.value!!, DbRepository.drawableToStream(appIcon.value!!))
+                    val a = App(
+                        it,
+                        appName.value!!,
+                        DbRepository.drawableToStream(appIcon.value!!),
+                        appSource.value!!,
+                        appInstallTime.value!!,
+                        appUpdateTime.value!!,
+                        appMinSdk.value!!,
+                        max(appTarSdk.value!!, appComSdk.value!!)
+                    )
                     dbRepository.rate(a, category, appRate.value)
                     val msg =
                         app.resources.getString(R.string.rate_app_msg, appRate.value)
