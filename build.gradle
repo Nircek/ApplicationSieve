@@ -2,15 +2,15 @@
 buildscript {
     //ext.kotlin_version = '1.7.20'
     ext {
-        activityVersion = '1.6.1'
+        activityVersion = '1.7.0'
         appCompatVersion = '1.6.1'
         constraintLayoutVersion = '2.1.4'
         coreTestingVersion = '2.1.0'
         coroutines = '1.6.4'
-        lifecycleVersion = '2.5.1'
+        lifecycleVersion = '2.6.1'
         materialVersion = '1.8.0'
         navigationVersion = '2.5.3'
-        roomVersion = '2.5.0'
+        roomVersion = '2.5.1'
     }
     repositories {
         google()
@@ -23,7 +23,7 @@ buildscript {
 }
 
 plugins {
-    id 'com.android.application' version '7.4.2' apply false
-    id 'com.android.library' version '7.4.2' apply false
-    id 'org.jetbrains.kotlin.android' version '1.7.20' apply false
+    id 'com.android.application' version '8.0.0' apply false
+    id 'com.android.library' version '8.0.0' apply false
+    id 'org.jetbrains.kotlin.android' version '1.8.20' apply false
 }
