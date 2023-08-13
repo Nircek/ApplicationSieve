@@ -13,14 +13,17 @@ android {
         applicationId "io.github.nircek.applicationsieve"
         minSdk 21
         targetSdk 33
-        versionCode 4
-        versionName "1.1.0"
+        versionCode 5
+        versionName "1.1.1"
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            applicationIdSuffix 'debug'
         }
     }
     compileOptions {
