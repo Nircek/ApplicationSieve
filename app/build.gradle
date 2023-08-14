@@ -28,15 +28,23 @@ android {
         targetSdk 33
         versionName "1.1.2"
     }
-
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            if (variant.buildType.name == 'debug') {
+                output.versionCodeOverride = getDatetime()
+            }
+            if (variant.buildType.name == 'release') {
+                output.versionCodeOverride = getCommitCount()
+                output.outputFileName = "io.github.nircek.applicationsieve_v${variant.versionName}.apk"
+            }
+        }
+    }
     buildTypes {
         release {
-            defaultConfig.versionCode getCommitCount()
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
-            defaultConfig.versionCode getDatetime()
             applicationIdSuffix '.debug'
         }
     }
@@ -53,7 +61,16 @@ android {
     dataBinding {
         enabled = true
     }
+}
 
+task copyReleaseReady(type: Copy) {
+    from 'release'
+    into 'release_archive'
+    include '*.apk'
+}
+
+afterEvaluate {
+    assembleRelease.finalizedBy(copyReleaseReady)
 }
 
 dependencies {
