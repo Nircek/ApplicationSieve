@@ -24,6 +24,10 @@ import androidx.room.Index
 )
 data class Rating(
     val app_id: Int,
+    val rating_time: Long,
+    val version: String,
+    val versionCode: Long,
+    val description: String,
     val category_id: Int,
     val rating: Float,
 )

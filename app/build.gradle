@@ -5,6 +5,19 @@ plugins {
     id 'androidx.navigation.safeargs.kotlin'
 }
 
+static def getDatetime() {
+    return new Date().format("yyyyMMddHH").toInteger()
+}
+
+def getCommitCount() {
+    // SRC: https://gist.github.com/paramsen/4a92c9230d799caeb3b90897da27a80c
+    def result = providers.exec { commandLine("git", "rev-list", "HEAD", "--count") }.standardOutput.asText.get().trim()
+    if (result.empty) // try Windows
+        result = providers.exec { commandLine("PowerShell", "-Command", "git", "rev-list", "HEAD", "--count") }.standardOutput.asText.get().trim()
+    if (result.empty) throw new RuntimeException("Could not generate versioncode on this platform")
+    return result.toInteger()
+}
+
 android {
     namespace 'io.github.nircek.applicationsieve'
     compileSdk 33
@@ -13,17 +26,18 @@ android {
         applicationId "io.github.nircek.applicationsieve"
         minSdk 21
         targetSdk 33
-        versionCode 5
-        versionName "1.1.1"
+        versionName "1.1.2"
     }
 
     buildTypes {
         release {
+            defaultConfig.versionCode getCommitCount()
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
-            applicationIdSuffix 'debug'
+            defaultConfig.versionCode getDatetime()
+            applicationIdSuffix '.debug'
         }
     }
     compileOptions {

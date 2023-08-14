@@ -35,7 +35,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{@string/app_description(vm.appName, vm.pkgName, vm.appVersion.live, vm.appFlags.live, vm.appFriendlyTarSdk.live, vm.appFriendlyMinSdk.live, vm.appFriendlyComSdk.live, vm.appSource, vm.appFriendlyInstallTime.live, vm.appFriendlyUpdateTime.live)}" />
+            android:text="@{@string/app_description(vm.appName, vm.pkgName, vm.appVersion, vm.appVersionCode, vm.appFlags.live, vm.appFriendlyTarSdk.live, vm.appFriendlyMinSdk.live, vm.appFriendlyComSdk.live, vm.appSource, vm.appFriendlyInstallTime.live, vm.appFriendlyUpdateTime.live)}" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

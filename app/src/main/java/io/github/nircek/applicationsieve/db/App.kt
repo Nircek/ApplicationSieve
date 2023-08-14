@@ -5,6 +5,9 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
+/**
+ * App - internal object to represent PackageManager state
+ */
 @Entity(
     tableName = "app_table",
     indices = [Index(value = ["package_name"], unique = true)]

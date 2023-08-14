@@ -1,20 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:fitsSystemWindows="true"
-    android:gravity="bottom">
+    xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
 
-    <TextView
+        <import type="android.view.View" />
+
+        <variable
+            name="buildConfig"
+            type="io.github.nircek.applicationsieve.BuildConfig" />
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
-        android:gravity="center"
-        android:text="@string/app_name"
-        app:drawableLeftCompat="@drawable/ic_launcher"
-        tools:textColor="#000" />
+        android:gravity="bottom">
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true"
+            android:gravity="center"
+            android:text="@string/app_name"
+            app:drawableLeftCompat="@drawable/ic_launcher"
+            tools:textColor="#000" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="DEBUG"
+            android:textStyle="bold"
+            android:visibility="@{buildConfig.DEBUG ? View.VISIBLE : View.GONE}"
+            tools:ignore="HardcodedText"
+            tools:textColor="#000" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

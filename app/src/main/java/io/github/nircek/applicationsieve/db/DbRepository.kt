@@ -63,9 +63,25 @@ class DbRepository(private val dao: DbDao) {
     suspend fun dropCategories() = dao.deleteAllCategories()
 
     @WorkerThread
-    suspend fun rate(app: App, category: Int, rating: Float) {
+    suspend fun rate(
+        app: App,
+        version: String,
+        versionCode: Long,
+        description: String,
+        category: Int,
+        rating: Float
+    ) {
         val appId = dao.insertApp(app).toInt()
-        dao.insertRate(Rating(appId, category, rating))
+        dao.insertRate(
+            Rating(
+                app_id = appId, rating_time = System.currentTimeMillis(),
+                version = version,
+                versionCode = versionCode,
+                description = description,
+                category_id = category,
+                rating = rating
+            )
+        )
     }
 
     fun getRatedApps(category: Int = 0): Flow<List<RatedApp>> {

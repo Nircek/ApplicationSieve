@@ -54,7 +54,10 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
     val pkgInfo = pkgName.mapLatest { it?.let { pm.getPackageInfo(it, 0) } }
     val appName = appInfo.mapLatest { it?.let { getApplicationName(it) } }.toStateFlow()
     val appIcon = appInfo.mapLatest { it?.loadIcon(pm) }.toStateFlow()
-    val appVersion = pkgInfo.mapLatest { it?.versionName }.toLiveFlow()
+    val appVersion = pkgInfo.mapLatest { it?.versionName }.toStateFlow()
+    val appVersionCode =
+        pkgInfo.mapLatest { it?.let { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) it.longVersionCode else null } }
+            .toStateFlow()
     val appFlags = appInfo.mapLatest { it?.let { parseFlags(it.flags) } }.toLiveFlow()
     val appTarSdk = appInfo.mapLatest { it?.let { it.targetSdkVersion } }.toStateFlow()
     val appMinSdk =
@@ -149,6 +152,7 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
         return when (who) {
             "com.android.vending" -> "G"
             "org.fdroid.fdroid" -> "F"
+            "org.looker.droidify" -> "F+"
             "com.aurora.store" -> "A"
             "com.huawei.appmarket" -> "H"
             "com.google.android.packageinstaller", null -> "C"
@@ -201,9 +205,11 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
                         appMinSdk.value!!,
                         max(appTarSdk.value!!, appComSdk.value!!)
                     )
-                    dbRepository.rate(a, category, appRate.value)
-                    val msg =
-                        app.resources.getString(R.string.rate_app_msg, appRate.value)
+                    // TODO: add description
+                    dbRepository.rate(
+                        a, appVersion.value!!, appVersionCode.value!!, "", category, appRate.value
+                    )
+                    val msg = app.resources.getString(R.string.rate_app_msg, appRate.value)
                     Toast.makeText(ctx, msg, Toast.LENGTH_SHORT).show()
                 }
             }
