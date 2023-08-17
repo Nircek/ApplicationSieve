@@ -45,6 +45,7 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
     //#region state holders
     val pkgName = MutableStateFlow<String?>(null)
     val appRate = MutableStateFlow(0.0f)
+    val appDescription = MutableStateFlow("")
     val selCategory = MutableStateFlow(0).toLiveFlow()
     //#endregion
 
@@ -99,10 +100,34 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
     private val pm get() = app.packageManager
     private val ctx get() = app.applicationContext
 
-    // TODO: make it a cached flow?
-    private fun getRandomInstalledPkg() = pm.getInstalledApplications(0)
+
+    private val installedPackages = pm.getInstalledApplications(0)
         .filter { it.flags and ApplicationInfo.FLAG_SYSTEM == 0 }
-        .random().packageName
+        .map { it.packageName }.toSet()
+
+    private val todoPackages =
+        dbRepository.allRatedPackageNames.mapLatest { installedPackages subtract it.toSet() }
+            .toStateFlow() // TODO: add recently updates
+
+    init {
+        viewModelScope.launch {
+            val all = installedPackages.size
+            val done = dbRepository.allRatedPackageNames.first().size
+            val left = todoPackages.filterNotNull().first().size
+            val perc = 100.0 * done / all
+            Toast.makeText(
+                ctx,
+                ctx.resources.getString(R.string.welcome_stats, all, done, perc, left),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private fun getRandomInstalledPkg() = try {
+        todoPackages.value?.random()
+    } catch (_: NoSuchElementException) {
+        null
+    }
 
     private fun getApplicationName(info: ApplicationInfo) = pm.getApplicationLabel(info).toString()
 
@@ -152,7 +177,7 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
         return when (who) {
             "com.android.vending" -> "G"
             "org.fdroid.fdroid" -> "F"
-            "org.looker.droidify" -> "F+"
+            "com.looker.droidify" -> "F+"
             "com.aurora.store" -> "A"
             "com.huawei.appmarket" -> "H"
             "com.google.android.packageinstaller", null -> "C"
@@ -176,9 +201,14 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
     //#region actions
     fun loadApp(packageName: String) {
         pkgName.value = packageName
+        viewModelScope.launch {
+            dbRepository.getRatedApp(packageName, selCategory.value)?.let {
+                appRate.value = it.rating
+            }
+        }
     }
 
-    fun randomize() = loadApp(getRandomInstalledPkg()) // TODO: how many packages
+    fun randomize() = loadApp(getRandomInstalledPkg() ?: ctx.packageName) // TODO: how many packages
     fun startApp() =
         pkgName.value?.let { pm.getLaunchIntentForPackage(it) }?.let { app.startActivity(it) }
 
@@ -193,25 +223,27 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
                 ).show()
                 return@launch
             }
-            viewModelScope.launch {
-                pkgName.value?.let {
-                    val a = App(
-                        it,
-                        appName.value!!,
-                        DbRepository.drawableToStream(appIcon.value!!),
-                        appSource.value!!,
-                        appInstallTime.value!!,
-                        appUpdateTime.value!!,
-                        appMinSdk.value!!,
-                        max(appTarSdk.value!!, appComSdk.value!!)
-                    )
-                    // TODO: add description
-                    dbRepository.rate(
-                        a, appVersion.value!!, appVersionCode.value!!, "", category, appRate.value
-                    )
-                    val msg = app.resources.getString(R.string.rate_app_msg, appRate.value)
-                    Toast.makeText(ctx, msg, Toast.LENGTH_SHORT).show()
-                }
+            pkgName.value?.let {
+                val a = App(
+                    it,
+                    appName.value!!,
+                    DbRepository.drawableToStream(appIcon.value!!),
+                    appSource.value!!,
+                    appInstallTime.value!!,
+                    appUpdateTime.value!!,
+                    appMinSdk.value!!,
+                    max(appTarSdk.value!!, appComSdk.value!!)
+                )
+                dbRepository.rate(
+                    a,
+                    appVersion.value!!,
+                    appVersionCode.value!!,
+                    appDescription.value,
+                    category,
+                    appRate.value
+                )
+                val msg = app.resources.getString(R.string.rate_app_msg, appRate.value)
+                Toast.makeText(ctx, msg, Toast.LENGTH_SHORT).show()
             }
         }
     }

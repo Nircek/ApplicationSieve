@@ -16,9 +16,14 @@ class DbRepository(private val dao: DbDao) {
 
     data class RatedApp(
         val app_id: Int,
+        val category_id: Int,
         val package_name: String,
+        val rating_time: Long,
+        val version: String,
+        val versionCode: Long,
         val app_name: String,
         val icon: ByteArray,
+        val description: String,
         val rating: Float
     )
 
@@ -51,6 +56,7 @@ class DbRepository(private val dao: DbDao) {
     }
 
     val allApps: Flow<List<App>> = dao.getAllApps()
+    val allRatedPackageNames: Flow<List<String>> = dao.getAllRatedPackageNames()
     val allCategories: Flow<List<Category>> = dao.getAllCategories()
 
     @WorkerThread
@@ -62,6 +68,12 @@ class DbRepository(private val dao: DbDao) {
     @WorkerThread
     suspend fun dropCategories() = dao.deleteAllCategories()
 
+
+    @WorkerThread
+    suspend fun wasRated(pkgName: String): Boolean {
+        return dao.getRatesOfApp(pkgName).isNotEmpty()
+    }
+
     @WorkerThread
     suspend fun rate(
         app: App,
@@ -71,7 +83,7 @@ class DbRepository(private val dao: DbDao) {
         category: Int,
         rating: Float
     ) {
-        val appId = dao.insertApp(app).toInt()
+        val appId = dao.addApp(app)
         dao.insertRate(
             Rating(
                 app_id = appId, rating_time = System.currentTimeMillis(),
@@ -90,9 +102,24 @@ class DbRepository(private val dao: DbDao) {
                 else dao.getRatesInAllCategories()
                 ).map { m ->
                 m.map { (k, v) ->
-                    RatedApp(v.app_id, v.package_name, v.app_name, v.icon, k.rating)
+                    RatedApp(
+                        app_id = v.app_id,
+                        category_id = category,
+                        package_name = v.package_name,
+                        rating_time = k.rating_time,
+                        version = k.version,
+                        versionCode = k.versionCode,
+                        app_name = v.app_name,
+                        icon = v.icon,
+                        description = k.description,
+                        rating = k.rating,
+                    )
                 }
             }
+    }
+
+    suspend fun getRatedApp(package_name: String, category: Int = 0): RatedApp? {
+        return dao.getRatedApp(package_name, category)
     }
 
     @WorkerThread
