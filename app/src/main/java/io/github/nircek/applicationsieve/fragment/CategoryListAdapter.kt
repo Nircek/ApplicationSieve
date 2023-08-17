@@ -38,7 +38,7 @@ class CategoryListAdapter :
         companion object {
             fun create(parent: ViewGroup): CategoryViewHolder {
                 val view: View = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.category_item, parent, false)
+                    .inflate(R.layout.item_category, parent, false)
                 return CategoryViewHolder(view)
             }
         }

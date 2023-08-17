@@ -1,5 +1,6 @@
 package io.github.nircek.applicationsieve.db
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -27,6 +28,8 @@ data class Rating(
     val rating_time: Long,
     val version: String,
     val versionCode: Long,
+    @ColumnInfo(defaultValue = "᛭")
+    val payload: String,
     val description: String,
     val category_id: Int,
     val rating: Float,

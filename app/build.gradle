@@ -26,7 +26,12 @@ android {
         applicationId "io.github.nircek.applicationsieve"
         minSdk 21
         targetSdk 33
-        versionName "1.1.3"
+        versionName "1.2.0"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
     }
     applicationVariants.all { variant ->
         variant.outputs.all { output ->
@@ -70,7 +75,7 @@ task copyReleaseReady(type: Copy) {
 }
 
 afterEvaluate {
-    assembleRelease.finalizedBy(copyReleaseReady)
+    assembleRelease.finalizedBy copyReleaseReady
 }
 
 dependencies {

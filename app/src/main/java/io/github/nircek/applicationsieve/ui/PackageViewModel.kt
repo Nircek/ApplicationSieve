@@ -59,7 +59,7 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
     val appVersionCode =
         pkgInfo.mapLatest { it?.let { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) it.longVersionCode else null } }
             .toStateFlow()
-    val appFlags = appInfo.mapLatest { it?.let { parseFlags(it.flags) } }.toLiveFlow()
+    val appFlags = appInfo.mapLatest { it?.let { parseFlags(it.flags) } }.toLiveStateFlow()
     val appTarSdk = appInfo.mapLatest { it?.let { it.targetSdkVersion } }.toStateFlow()
     val appMinSdk =
         appInfo.mapLatest { it?.let { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) it.minSdkVersion else null } }
@@ -202,9 +202,9 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
     fun loadApp(packageName: String) {
         pkgName.value = packageName
         viewModelScope.launch {
-            dbRepository.getRatedApp(packageName, selCategory.value)?.let {
-                appRate.value = it.rating
-            }
+            val saved = dbRepository.getRatedApp(packageName, selCategory.value)
+            saved?.let { appRate.value = it.rating }
+            appDescription.value = saved?.description ?: ""
         }
     }
 
@@ -238,6 +238,7 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
                     a,
                     appVersion.value!!,
                     appVersionCode.value!!,
+                    appFlags.value!!,
                     appDescription.value,
                     category,
                     appRate.value

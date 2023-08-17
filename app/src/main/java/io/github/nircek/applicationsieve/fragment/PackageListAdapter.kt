@@ -33,7 +33,8 @@ class PackageListAdapter :
                 itemView.resources.getString(
                     R.string.item_pkg_string,
                     pkg.rating.roundToInt(),
-                    pkg.package_name
+                    pkg.package_name,
+                    pkg.description
                 )
             val bitmap = BitmapFactory.decodeByteArray(pkg.icon, 0, pkg.icon.size)
             val draw = BitmapDrawable(pkgTextView.resources, bitmap)
@@ -47,7 +48,7 @@ class PackageListAdapter :
         companion object {
             fun create(parent: ViewGroup): PackageViewHolder {
                 val view: View = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.package_item, parent, false)
+                    .inflate(R.layout.item_package, parent, false)
                 return PackageViewHolder(view)
             }
         }

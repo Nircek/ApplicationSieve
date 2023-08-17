@@ -12,88 +12,118 @@
             type="io.github.nircek.applicationsieve.ui.PackageViewModel" />
     </data>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         tools:context=".fragment.PackageRater">
 
+
         <io.github.nircek.applicationsieve.ui.CategorySpinner
             android:id="@+id/spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:supply_new="true"
             app:viewModel="@{vm}" />
 
         <Button
+            android:id="@+id/button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="@{_->vm.randomize()}"
-            android:text="@string/pick_btn" />
+            android:text="@string/pick_btn"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/spinner" />
 
         <TextView
+            android:id="@+id/textView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{@string/app_description(vm.appName, vm.pkgName, vm.appVersion, vm.appVersionCode, vm.appFlags.live, vm.appFriendlyTarSdk.live, vm.appFriendlyMinSdk.live, vm.appFriendlyComSdk.live, vm.appSource, vm.appFriendlyInstallTime.live, vm.appFriendlyUpdateTime.live)}" />
+            android:minLines="12"
+            android:text="@{@string/app_description(vm.appName, vm.pkgName, vm.appVersion, vm.appVersionCode, vm.appFlags, vm.appFriendlyTarSdk.live, vm.appFriendlyMinSdk.live, vm.appFriendlyComSdk.live, vm.appSource, vm.appFriendlyInstallTime.live, vm.appFriendlyUpdateTime.live)}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="70dp">
 
-            <ImageButton
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:layout_marginEnd="8dp"
-                android:alpha="@{vm.appFdroidRepo.live &lt;= 0 ? 0.3f : 1.0f}"
-                android:background="@drawable/round_background"
-                android:padding="10dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_fdroid"
-                android:visibility="@{vm.appFdroidRepo.live >= 0 ? View.VISIBLE : View.GONE}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/logo"
-                app:layout_constraintTop_toTopOf="parent" />
+        <ImageButton
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_marginEnd="8dp"
+            android:alpha="@{vm.appFdroidRepo.live &lt;= 0 ? 0.3f : 1.0f}"
+            android:background="@drawable/round_background"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_fdroid"
+            android:visibility="@{vm.appFdroidRepo.live >= 0 ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@+id/logo"
+            app:layout_constraintEnd_toStartOf="@id/logo"
+            app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
-            <ImageView
-                android:id="@+id/logo"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:onClick="@{_->vm.startApp()}"
-                android:scaleType="fitXY"
-                android:src="@{vm.appIcon}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:onClick="@{_->vm.startApp()}"
+            android:scaleType="fitXY"
+            android:src="@{vm.appIcon}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
-            <ImageButton
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:layout_marginStart="8dp"
-                android:alpha="@{vm.appGoogleRepo.live &lt;= 0 ? 0.3f : 1.0f}"
-                android:background="@drawable/round_background"
-                android:padding="10dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_google"
-                android:visibility="@{vm.appGoogleRepo.live >= 0 ? View.VISIBLE : View.GONE}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/logo"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageButton
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_marginStart="8dp"
+            android:alpha="@{vm.appGoogleRepo.live &lt;= 0 ? 0.3f : 1.0f}"
+            android:background="@drawable/round_background"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_google"
+            android:visibility="@{vm.appGoogleRepo.live >= 0 ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@+id/logo"
+            app:layout_constraintStart_toEndOf="@id/logo"
+            app:layout_constraintTop_toTopOf="@+id/logo" />
 
         <RatingBar
+            android:id="@+id/ratingBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:numStars="7"
             android:rating="@={vm.appRate}"
-            android:stepSize="0.16666666666666666" />
+            android:stepSize="0.16666666666666666"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/logo" />
 
         <Button
+            android:id="@+id/button2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="@{_-> vm.add()}"
-            android:text="@string/rate_btn" />
-    </LinearLayout>
+            android:text="@string/rate_btn"
+            app:layout_constraintTop_toBottomOf="@+id/ratingBar"
+            tools:layout_editor_absoluteX="-25dp" />
+
+        <EditText
+            android:id="@+id/edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:gravity="top"
+            android:text="@={vm.appDescription}"
+            android:hint="@string/description"
+            android:inputType="text|textMultiLine"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button2" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

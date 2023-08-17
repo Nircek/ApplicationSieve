@@ -1,6 +1,7 @@
 package io.github.nircek.applicationsieve.db
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -11,7 +12,11 @@ import kotlinx.coroutines.launch
 @Database(
     entities = [
         App::class, Category::class, Rating::class
-    ], version = 3, exportSchema = false
+    ], version = 4, exportSchema = true,
+    autoMigrations = [
+        AutoMigration(from = 3, to = 4),
+    ]
+
 )
 abstract class AppDatabase : RoomDatabase() {
 

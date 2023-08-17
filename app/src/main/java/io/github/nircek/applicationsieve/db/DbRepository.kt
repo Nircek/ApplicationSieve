@@ -79,6 +79,7 @@ class DbRepository(private val dao: DbDao) {
         app: App,
         version: String,
         versionCode: Long,
+        payload: String,
         description: String,
         category: Int,
         rating: Float
@@ -89,6 +90,7 @@ class DbRepository(private val dao: DbDao) {
                 app_id = appId, rating_time = System.currentTimeMillis(),
                 version = version,
                 versionCode = versionCode,
+                payload = payload,
                 description = description,
                 category_id = category,
                 rating = rating
