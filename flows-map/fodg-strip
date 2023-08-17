@@ -1,0 +1,4 @@
+#!/bin/sh
+xmlstarlet ed --delete "/office:document/office:settings/config:config-item-set/*" --delete "/office:document/office:scripts/office:script" flows.fodg | XMLLINT_INDENT=' ' xmllint --format - > flows-stripped.fodg
+mv flows-stripped.fodg flows.fodg
+
