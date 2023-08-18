@@ -83,6 +83,38 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
     val appFdroidRepo = query("https://f-droid.org/en/packages/").toLiveFlow()
     val appsInCategory = selCategory.flatMapLatest { dbRepository.getRatedApps(it) }.toLiveFlow()
     val allCategories = dbRepository.allCategories.toLiveStateFlow(listOf())
+    private val todoPackages =
+        dbRepository.allRatedPackageNames.mapLatest { installedPackages subtract it.toSet() }
+            .toStateFlow(setOf())
+    val progressStatCur = dbRepository.allRatedPackageNames.mapLatest { it.size }.toStateFlow()
+    val progressStatMax =
+        dbRepository.allRatedPackageNames.mapLatest { (installedPackages + it).size }.toStateFlow()
+    val stats = combine(
+        dbRepository.allRatedPackageNames,
+        todoPackages,
+        dbRepository.countOfRates,
+        dbRepository.countOfCategories,
+        dbRepository.maxCountInCategories
+    ) { allRated, todo, rates, categories, maxCategory ->
+        val rated = allRated.size
+        val known = (installedPackages + allRated).size
+        val installed = installedPackages.size
+        val left = todo.size
+        val ratedFactor = if (known > 0) 100.0 * rated / known else 0.0
+        val ratesFactor = if (rated > 0) 1.0 * rates / rated else 0.0
+        ctx.resources.getString(
+            R.string.stats,
+            rated,
+            ratedFactor,
+            known,
+            installed,
+            left,
+            rates,
+            categories,
+            ratesFactor,
+            maxCategory
+        )
+    }.toLiveFlow()
 
 
     private fun query(url: String) = pkgName.flatMapLatest {
@@ -105,26 +137,9 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
         .filter { it.flags and ApplicationInfo.FLAG_SYSTEM == 0 }
         .map { it.packageName }.toSet()
 
-    private val todoPackages =
-        dbRepository.allRatedPackageNames.mapLatest { installedPackages subtract it.toSet() }
-            .toStateFlow() // TODO: add recently updates
-
-    init {
-        viewModelScope.launch {
-            val all = installedPackages.size
-            val done = dbRepository.allRatedPackageNames.first().size
-            val left = todoPackages.filterNotNull().first().size
-            val perc = 100.0 * done / all
-            Toast.makeText(
-                ctx,
-                ctx.resources.getString(R.string.welcome_stats, all, done, perc, left),
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
 
     private fun getRandomInstalledPkg() = try {
-        todoPackages.value?.random()
+        todoPackages.value.random()
     } catch (_: NoSuchElementException) {
         null
     }

@@ -27,7 +27,8 @@ class MainActivity : AppCompatActivity() {
         val setOfTopLevelDestinations = setOf(
             R.id.nav_pkg_list,
             R.id.nav_rater,
-            R.id.nav_category_list
+            R.id.nav_category_list,
+            R.id.nav_stats,
         )
         appBarConfiguration = AppBarConfiguration(setOfTopLevelDestinations, binding.drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)

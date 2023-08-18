@@ -58,6 +58,9 @@ class DbRepository(private val dao: DbDao) {
     val allApps: Flow<List<App>> = dao.getAllApps()
     val allRatedPackageNames: Flow<List<String>> = dao.getAllRatedPackageNames()
     val allCategories: Flow<List<Category>> = dao.getAllCategories()
+    val countOfRates: Flow<Int> = dao.countRates()
+    val countOfCategories: Flow<Int> = dao.countCategories()
+    val maxCountInCategories: Flow<Int> = dao.maxCountInCategories()
 
     @WorkerThread
     suspend fun dropApps() = dao.deleteAllApps()

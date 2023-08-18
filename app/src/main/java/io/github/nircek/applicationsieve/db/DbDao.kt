@@ -8,8 +8,17 @@ interface DbDao {
     @Query("SELECT * FROM app_table ORDER BY package_name ASC")
     fun getAllApps(): Flow<List<App>>
 
-    @Query("SELECT package_name FROM app_table JOIN rating_table ON app_table.app_id == rating_table.app_id ORDER BY package_name ASC")
+    @Query("SELECT DISTINCT package_name FROM app_table JOIN rating_table ON app_table.app_id == rating_table.app_id ORDER BY package_name ASC")
     fun getAllRatedPackageNames(): Flow<List<String>>
+
+    @Query("SELECT COUNT(*) FROM rating_table")
+    fun countRates(): Flow<Int>
+
+    @Query("SELECT COUNT(*) FROM category_table")
+    fun countCategories(): Flow<Int>
+
+    @Query("SELECT IFNULL((SELECT COUNT(*)AS cnt FROM rating_table GROUP BY category_id ORDER BY cnt DESC LIMIT 1), 0)")
+    fun maxCountInCategories(): Flow<Int>
 
     @Insert
     suspend fun _insertApp(a: App): Long // SRC: https://stackoverflow.com/a/44364516/6732111

@@ -3,6 +3,7 @@
     <string name="nav_pkg_list_label">List</string>
     <string name="nav_rater_label">Rate</string>
     <string name="nav_category_list_label">Categories</string>
+    <string name="nav_stats_label">Stats</string>
     <string name="item_pkg_string">%d⭐ %s\n%s</string>
     <string name="rate_app_msg">"%.2f/7"</string>
     <string name="pick_btn">Pick one!</string>
@@ -17,6 +18,6 @@
     <string name="all_categories"><![CDATA[<all categories>]]></string>
     <string name="new_category">Add new…</string>
     <string name="app_description">%1$s\n%2$s %3$s [%4$d]\n%5$s\ntar %6$s\nmin %7$s\ncom %8$s\n%9$s %10$s %11$s</string>
-    <string name="welcome_stats">%d packages installed, %d (%.1f%%) rated, %d left</string>
+    <string name="stats">%d (%.1f%%) rated of %d known, %d installed, %d left\n%d entries, %d categories (avg per pkg %.1f, max in cat %d)</string>
     <string name="description">Description</string>
 </resources>
