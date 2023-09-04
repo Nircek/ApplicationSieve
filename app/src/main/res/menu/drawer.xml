@@ -20,5 +20,9 @@
             android:id="@id/nav_stats"
             android:icon="@android:drawable/ic_dialog_info"
             android:title="@string/nav_stats_label" />
+        <item
+            android:id="@id/nav_exporter"
+            android:icon="@android:drawable/stat_sys_upload"
+            android:title="@string/nav_exporter_label" />
     </group>
 </menu>

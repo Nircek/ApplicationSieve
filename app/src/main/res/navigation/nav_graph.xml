@@ -42,4 +42,8 @@
         android:id="@+id/nav_stats"
         android:name="io.github.nircek.applicationsieve.fragment.Stats"
         android:label="@string/nav_stats_label" />
+    <fragment
+        android:id="@+id/nav_exporter"
+        android:name="io.github.nircek.applicationsieve.fragment.Exporter"
+        android:label="@string/nav_exporter_label" />
 </navigation>

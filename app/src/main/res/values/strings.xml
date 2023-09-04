@@ -4,6 +4,7 @@
     <string name="nav_rater_label">Rate</string>
     <string name="nav_category_list_label">Categories</string>
     <string name="nav_stats_label">Stats</string>
+    <string name="nav_exporter_label">Export data</string>
     <string name="item_pkg_string">%d⭐ %s\n%s</string>
     <string name="rate_app_msg">"%.2f/7"</string>
     <string name="pick_btn">Pick one!</string>
