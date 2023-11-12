@@ -1,7 +1,12 @@
 package io.github.nircek.applicationsieve.fragment
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -37,6 +42,7 @@ class PackageList : Fragment(), MenuProvider {
                 setTitle(R.string.drop_apps_confirm)
                 setPositiveButton(R.string.drop_apps_btn) { _, _ -> packageViewModel.dropApps() }
             }.show()
+
             else -> return false
         }
         return true

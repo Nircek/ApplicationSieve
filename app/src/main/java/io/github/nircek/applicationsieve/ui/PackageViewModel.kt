@@ -1,6 +1,7 @@
 package io.github.nircek.applicationsieve.ui
 
 import android.app.Application
+import android.bluetooth.BluetoothAdapter
 import android.content.pm.ApplicationInfo
 import android.os.Build
 import android.util.Log
@@ -10,6 +11,7 @@ import io.github.nircek.applicationsieve.R
 import io.github.nircek.applicationsieve.db.App
 import io.github.nircek.applicationsieve.db.Category
 import io.github.nircek.applicationsieve.db.DbRepository
+import io.github.nircek.applicationsieve.util.delayFlow
 import io.github.nircek.applicationsieve.util.toLiveFlow
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -115,6 +117,27 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
             maxCategory
         )
     }.toLiveFlow()
+
+    val pairedDevices = delayFlow(5000).map { "[" + it + "]\n" + boundedDevices() }.toLiveFlow()
+
+    fun boundedDevices(): String {
+        try {
+            val bluetoothAdapter =
+                BluetoothAdapter.getDefaultAdapter() ?: return "BLUETOOTH UNAVAILABLE"
+            if (!bluetoothAdapter.isEnabled) return "BLUETOOTH OFFLINE"
+            val returned = bluetoothAdapter.bondedDevices.joinToString("\n") {
+                ctx.resources.getString(
+                    R.string.bluetooth_device,
+                    it.name,
+                    it.address
+                )
+            }
+            return if (returned.length == 0) "NO DEVICES" else returned
+        } catch (_: SecurityException) {
+            return "PERMISSION DENIED"
+        }
+
+    }
 
 
     private fun query(url: String) = pkgName.flatMapLatest {

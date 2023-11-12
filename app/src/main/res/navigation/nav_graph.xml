@@ -46,4 +46,9 @@
         android:id="@+id/nav_exporter"
         android:name="io.github.nircek.applicationsieve.fragment.Exporter"
         android:label="@string/nav_exporter_label" />
+    <fragment
+        android:id="@+id/nav_bluetooth_connecter"
+        android:name="io.github.nircek.applicationsieve.fragment.BluetoothConnecter"
+        android:label="@string/nav_bluetooth_connecter_label" />
+
 </navigation>

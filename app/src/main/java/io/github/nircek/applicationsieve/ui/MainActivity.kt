@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_category_list,
             R.id.nav_stats,
             R.id.nav_exporter,
+            R.id.nav_bluetooth_connecter,
         )
         appBarConfiguration = AppBarConfiguration(setOfTopLevelDestinations, binding.drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)

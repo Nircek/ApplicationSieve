@@ -16,19 +16,23 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <ProgressBar
-            style="@android:style/Widget.Material.ProgressBar.Horizontal"
+        <Button
+            android:id="@+id/enable_bluetooth"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:max="@{vm.progressStatMax}"
-            android:paddingBottom="4dp"
-            android:progress="@{vm.progressStatCur}" />
+            android:text="@string/enable_bluetooth" />
+
+        <Button
+            android:id="@+id/grant_bluetooth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/grant_bluetooth" />
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="@{vm.stats.live}" />
+            android:text="@{vm.pairedDevices.live}" />
     </LinearLayout>
 
 </layout>

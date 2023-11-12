@@ -14,12 +14,9 @@ import io.github.nircek.applicationsieve.App
 import io.github.nircek.applicationsieve.BuildConfig
 import io.github.nircek.applicationsieve.R
 import io.github.nircek.applicationsieve.databinding.FragmentExporterBinding
+import io.github.nircek.applicationsieve.util.timestamp
 import java.io.File
 import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.TimeZone
 
 
 class Exporter : Fragment() {
@@ -38,11 +35,6 @@ class Exporter : Fragment() {
 
     private var currentDatabasePath: String? = null
 
-    private fun timestamp(): String {
-        return SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
-            .apply { timeZone = TimeZone.getTimeZone("UTC") }
-            .format(Date())
-    }
 
     private fun saveDatabaseToFile() {
         val app = requireActivity().application as App

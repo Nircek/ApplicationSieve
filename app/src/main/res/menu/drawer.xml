@@ -24,5 +24,9 @@
             android:id="@id/nav_exporter"
             android:icon="@android:drawable/stat_sys_upload"
             android:title="@string/nav_exporter_label" />
+        <item
+            android:id="@id/nav_bluetooth_connecter"
+            android:icon="@android:drawable/stat_sys_data_bluetooth"
+            android:title="@string/nav_bluetooth_connecter_label" />
     </group>
 </menu>
