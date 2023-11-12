@@ -118,27 +118,6 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
         )
     }.toLiveFlow()
 
-    val pairedDevices = delayFlow(5000).map { "[" + it + "]\n" + boundedDevices() }.toLiveFlow()
-
-    fun boundedDevices(): String {
-        try {
-            val bluetoothAdapter =
-                BluetoothAdapter.getDefaultAdapter() ?: return "BLUETOOTH UNAVAILABLE"
-            if (!bluetoothAdapter.isEnabled) return "BLUETOOTH OFFLINE"
-            val returned = bluetoothAdapter.bondedDevices.joinToString("\n") {
-                ctx.resources.getString(
-                    R.string.bluetooth_device,
-                    it.name,
-                    it.address
-                )
-            }
-            return if (returned.length == 0) "NO DEVICES" else returned
-        } catch (_: SecurityException) {
-            return "PERMISSION DENIED"
-        }
-
-    }
-
 
     private fun query(url: String) = pkgName.flatMapLatest {
         flow {

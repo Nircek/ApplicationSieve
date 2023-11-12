@@ -28,11 +28,11 @@
             android:layout_height="wrap_content"
             android:text="@string/grant_bluetooth" />
 
-        <TextView
-            android:id="@+id/textView"
+        <Button
+            android:id="@+id/connect_device"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@{vm.pairedDevices.live}" />
+            android:layout_height="wrap_content"
+            android:text="@string/connect_device" />
     </LinearLayout>
 
 </layout>

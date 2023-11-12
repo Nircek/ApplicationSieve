@@ -26,7 +26,7 @@ android {
         applicationId "io.github.nircek.applicationsieve"
         minSdk 21
         targetSdk 33
-        versionName "1.2.3"
+        versionName "1.2.3.1"
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]

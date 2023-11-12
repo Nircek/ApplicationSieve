@@ -26,4 +26,5 @@
     <string name="enable_bluetooth">Enable bluetooth</string>
     <string name="grant_bluetooth">Grant permission</string>
     <string name="permission_needed">Permission needed</string>
+    <string name="connect_device">Connect device</string>
 </resources>
