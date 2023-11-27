@@ -1,7 +1,9 @@
 package io.github.nircek.applicationsieve.ui
 
 import android.app.Application
+import android.content.Intent
 import android.content.pm.ApplicationInfo
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
@@ -240,6 +242,14 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
     fun randomize() = loadApp(getRandomInstalledPkg() ?: ctx.packageName) // TODO: how many packages
     fun startApp() =
         pkgName.value?.let { pm.getLaunchIntentForPackage(it) }?.let { app.startActivity(it) }
+
+    fun deleteApp() =
+        pkgName.value?.let {
+            app.startActivity(Intent(Intent.ACTION_DELETE).apply {
+                data = Uri.parse("package:$it")
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            })
+        }
 
     fun add() {
         viewModelScope.launch {
