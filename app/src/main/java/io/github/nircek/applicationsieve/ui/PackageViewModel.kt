@@ -3,6 +3,7 @@ package io.github.nircek.applicationsieve.ui
 import android.app.Application
 import android.content.Intent
 import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.util.Log
@@ -54,8 +55,24 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
 
     //#region flows
     // FIXME: firstly look up the db
-    val appInfo = pkgName.mapLatest { it?.let { pm.getApplicationInfo(it, 0) } }
-    val pkgInfo = pkgName.mapLatest { it?.let { pm.getPackageInfo(it, 0) } }
+    val appInfo = pkgName.mapLatest {
+        it?.let {
+            try {
+                pm.getApplicationInfo(it, 0)
+            } catch (_: PackageManager.NameNotFoundException) {
+                null
+            }
+        }
+    }
+    val pkgInfo = pkgName.mapLatest {
+        it?.let {
+            try {
+                pm.getPackageInfo(it, 0)
+            } catch (_: PackageManager.NameNotFoundException) {
+                null
+            }
+        }
+    }
     val appName = appInfo.mapLatest { it?.let { getApplicationName(it) } }.toStateFlow()
     val appIcon = appInfo.mapLatest { it?.loadIcon(pm) }.toStateFlow()
     val appVersion = pkgInfo.mapLatest { it?.versionName }.toStateFlow()
@@ -63,7 +80,7 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
         pkgInfo.mapLatest { it?.let { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) it.longVersionCode else null } }
             .toStateFlow()
     val appFlags = appInfo.mapLatest { it?.let { parseFlags(it.flags) } }.toLiveStateFlow()
-    val appTarSdk = appInfo.mapLatest { it?.let { it.targetSdkVersion } }.toStateFlow()
+    val appTarSdk = appInfo.mapLatest { it?.targetSdkVersion }.toStateFlow()
     val appMinSdk =
         appInfo.mapLatest { it?.let { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) it.minSdkVersion else null } }
             .toStateFlow()
@@ -201,18 +218,31 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
         sdk?.let { "$sdk/${getAndroidCodename(sdk)}/Android${getFriendlyAndroidVersion(sdk)}" }
 
     private fun getFriendlySource(info: ApplicationInfo): String {
-        val (who, via) = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-            pm.getInstallSourceInfo(info.packageName)
-                .let { Pair(it.installingPackageName, it.initiatingPackageName) }
-        else Pair(pm.getInstallerPackageName(info.packageName), null)
-        return when (who) {
-            "com.android.vending" -> "G"
-            "org.fdroid.fdroid" -> "F"
-            "com.looker.droidify" -> "F+"
-            "com.aurora.store" -> "A"
-            "com.huawei.appmarket" -> "H"
-            "com.google.android.packageinstaller", null -> "C"
-            else -> "U[$who]".also { Log.d(javaClass.simpleName, "unknown vendor: ($who, $via)") }
+        try {
+            val (who, via) = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                pm.getInstallSourceInfo(info.packageName)
+                    .let { Pair(it.installingPackageName, it.initiatingPackageName) }
+            else Pair(pm.getInstallerPackageName(info.packageName), null)
+
+            return when (who) {
+                "com.android.vending" -> "G"
+                "org.fdroid.fdroid" -> "F"
+                "com.looker.droidify" -> "F+"
+                "com.aurora.store" -> "A"
+                "com.huawei.appmarket" -> "H"
+                "com.google.android.packageinstaller", null -> "C"
+                else -> "U[$who]".also {
+                    Log.d(
+                        javaClass.simpleName,
+                        "unknown vendor: ($who, $via)"
+                    )
+                }
+            }
+        } catch (e: Exception) {
+            when (e) {
+                is IllegalArgumentException, is PackageManager.NameNotFoundException -> return "-"
+                else -> throw e
+            }
         }
     }
 
@@ -247,7 +277,7 @@ class PackageViewModel(private val dbRepository: DbRepository, application: Appl
         pkgName.value?.let {
             app.startActivity(Intent(Intent.ACTION_DELETE).apply {
                 data = Uri.parse("package:$it")
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             })
         }
 
